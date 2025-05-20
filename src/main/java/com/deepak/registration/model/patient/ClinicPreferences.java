@@ -1,12 +1,10 @@
 package com.deepak.registration.model.patient;
 
-import java.util.List;
-
 import com.deepak.registration.validation.AllowedCommunicationMethods;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,12 +18,14 @@ import lombok.Setter;
 @Builder
 public class ClinicPreferences {
 
-    @Size(min = 2, max = 30)
-    @Schema(description = "Preferred language for communication", example = "English")
-    private String preferredLanguage;
+  @Size(min = 2, max = 30)
+  @Schema(description = "Preferred language for communication", example = "English")
+  private String preferredLanguage;
 
-    @NotNull
-    @AllowedCommunicationMethods
-    @Schema(description = "Preferred communication methods", example = "[\"Email\", \"SMS\", \"Whatsapp\"]")
-    private List<String> communicationMethod;
+  @NotNull
+  @AllowedCommunicationMethods
+  @Schema(
+      description = "Preferred communication methods",
+      example = "[\"Email\", \"SMS\", \"Whatsapp\"]")
+  private List<String> communicationMethod;
 }

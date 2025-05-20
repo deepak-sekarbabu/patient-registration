@@ -16,19 +16,21 @@ import lombok.Setter;
 @Builder
 public class EmergencyContact {
 
-    @Size(min = 2, max = 50)
-    @Schema(description = "Name of the emergency contact", example = "Priya Sharma")
-    private String name;
+  @Size(min = 2, max = 50)
+  @Schema(description = "Name of the emergency contact", example = "Priya Sharma")
+  private String name;
 
-    @Size(min = 2, max = 30)
-    @Schema(description = "Relationship to the patient", example = "Spouse")
-    private String relationship;
+  @Size(min = 2, max = 30)
+  @Schema(description = "Relationship to the patient", example = "Spouse")
+  private String relationship;
 
-    @Pattern(regexp = "^\\+91[0-9]{10}$", message = "Phone number must start with +91 and be followed by 10 digits")
-    @Schema(description = "Phone number of the emergency contact", example = "+919876543211")
-    private String phoneNumber;
+  @Pattern(
+      regexp = "^\\+91[0-9]{10}$",
+      message = "Phone number must start with +91 and be followed by 10 digits")
+  @Schema(description = "Phone number of the emergency contact", example = "+919876543211")
+  private String phoneNumber;
 
-    @Size(min = 2, max = 100)
-    @Schema(description = "Address of the emergency contact", example = "Same as patient")
-    private String address;
+  @Size(min = 2, max = 100)
+  @Schema(description = "Address of the emergency contact", example = "Same as patient")
+  private String address;
 }

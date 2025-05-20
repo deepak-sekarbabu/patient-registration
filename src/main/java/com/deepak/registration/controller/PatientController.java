@@ -1,7 +1,18 @@
 package com.deepak.registration.controller;
 
+import com.deepak.registration.model.patient.Patient;
+import com.deepak.registration.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,18 +20,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.validation.Valid;
-
-import com.deepak.registration.model.patient.Patient;
-import com.deepak.registration.service.PatientService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Patients", description = "Operations related to patient registration and management")
 @RestController
@@ -29,75 +28,163 @@ import lombok.RequiredArgsConstructor;
 @Validated
 public class PatientController {
 
-    private final PatientService patientService;
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(PatientController.class);
+  private final PatientService patientService;
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(PatientController.class);
 
-    @Operation(summary = "Create a new patient", description = "Registers a new patient in the system and returns the saved patient details.", requestBody = @RequestBody(required = true, description = "Patient object to be created", content = @Content(schema = @Schema(implementation = Patient.class))), responses = {
-            @ApiResponse(responseCode = "200", description = "Patient created successfully", content = @Content(schema = @Schema(implementation = Patient.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
-    })
-    @PostMapping
-    public ResponseEntity<Patient> createPatient(@org.springframework.web.bind.annotation.RequestBody Patient patient) {
-        Patient savedPatient = patientService.createPatient(patient);
-        return ResponseEntity.ok(savedPatient);
+  @Operation(
+      summary = "Create a new patient",
+      description = "Registers a new patient in the system and returns the saved patient details.",
+      requestBody =
+          @RequestBody(
+              required = true,
+              description = "Patient object to be created",
+              content = @Content(schema = @Schema(implementation = Patient.class))),
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Patient created successfully",
+            content = @Content(schema = @Schema(implementation = Patient.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+      })
+  @PostMapping
+  public ResponseEntity<Patient> createPatient(
+      @org.springframework.web.bind.annotation.RequestBody Patient patient) {
+    Patient savedPatient = patientService.createPatient(patient);
+    return ResponseEntity.ok(savedPatient);
+  }
+
+  @Operation(
+      summary = "Get patient by phone number",
+      description = "Retrieves patient information using the provided phone number.",
+      parameters = {
+        @io.swagger.v3.oas.annotations.Parameter(
+            name = "phoneNumber",
+            description = "Phone number of the patient",
+            required = true,
+            example = "+919789801844")
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Patient found",
+            content = @Content(schema = @Schema(implementation = Patient.class))),
+        @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
+      })
+  @GetMapping("/by-phone")
+  public ResponseEntity<Patient> getPatientByPhoneNumber(@RequestParam String phoneNumber) {
+    Patient patient = patientService.getPatientByPhoneNumber(phoneNumber);
+    if (patient == null) {
+      logger.warn("Patient not found for phone number: {}", phoneNumber);
+      return ResponseEntity.notFound().build();
     }
+    return ResponseEntity.ok(patient);
+  }
 
-    @Operation(summary = "Get patient by phone number", description = "Retrieves patient information using the provided phone number.", parameters = {
-            @io.swagger.v3.oas.annotations.Parameter(name = "phoneNumber", description = "Phone number of the patient", required = true, example = "+919789801844")
-    }, responses = {
-            @ApiResponse(responseCode = "200", description = "Patient found", content = @Content(schema = @Schema(implementation = Patient.class))),
-            @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
-    })
-    @GetMapping("/by-phone")
-    public ResponseEntity<Patient> getPatientByPhoneNumber(@RequestParam String phoneNumber) {
-        Patient patient = patientService.getPatientByPhoneNumber(phoneNumber);
-        if (patient == null) {
-            logger.warn("Patient not found for phone number: {}", phoneNumber);
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(patient);
+  @Operation(
+      summary = "Get patient by id",
+      description = "Retrieves patient information using the provided id.",
+      parameters = {
+        @io.swagger.v3.oas.annotations.Parameter(
+            name = "id",
+            description = "ID of the patient",
+            required = true,
+            example = "1")
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Patient found",
+            content = @Content(schema = @Schema(implementation = Patient.class))),
+        @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
+      })
+  @GetMapping("/by-id")
+  public ResponseEntity<Patient> getPatientById(@RequestParam Long id) {
+    Patient patient = patientService.getPatientById(id);
+    if (patient == null) {
+      logger.warn("Patient not found for id: {}", id);
+      return ResponseEntity.notFound().build();
     }
+    return ResponseEntity.ok(patient);
+  }
 
-    @Operation(summary = "Get patient by id", description = "Retrieves patient information using the provided id.", parameters = {
-            @io.swagger.v3.oas.annotations.Parameter(name = "id", description = "ID of the patient", required = true, example = "1")
-    }, responses = {
-            @ApiResponse(responseCode = "200", description = "Patient found", content = @Content(schema = @Schema(implementation = Patient.class))),
-            @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
-    })
-    @GetMapping("/by-id")
-    public ResponseEntity<Patient> getPatientById(@RequestParam Long id) {
-        Patient patient = patientService.getPatientById(id);
-        if (patient == null) {
-            logger.warn("Patient not found for id: {}", id);
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(patient);
+  @Operation(
+      summary = "Update patient information",
+      description = "Updates an existing patient's information in the system.",
+      requestBody =
+          @RequestBody(
+              required = true,
+              description = "Updated patient object (only include fields to update)",
+              content = @Content(schema = @Schema(implementation = Patient.class))),
+      parameters = {
+        @io.swagger.v3.oas.annotations.Parameter(
+            name = "id",
+            description = "ID of the patient to update",
+            required = true,
+            example = "1")
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Patient updated successfully",
+            content = @Content(schema = @Schema(implementation = Patient.class))),
+        @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+      })
+  @PutMapping("/{id}")
+  public ResponseEntity<Patient> updatePatient(
+      @PathVariable Long id,
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Patient object with fields to update")
+          @org.springframework.web.bind.annotation.RequestBody
+          @Valid
+          Patient patient) {
+    logger.debug("Received update request for patient id: {}", id);
+    if (patient == null) {
+      logger.warn("Update request body is null for patient id: {}", id);
+      return ResponseEntity.badRequest().build();
     }
+    logger.debug("Update request data: {}", patient);
 
-    @Operation(summary = "Update patient information", description = "Updates an existing patient's information in the system.", requestBody = @RequestBody(required = true, description = "Updated patient object (only include fields to update)", content = @Content(schema = @Schema(implementation = Patient.class))), parameters = {
-            @io.swagger.v3.oas.annotations.Parameter(name = "id", description = "ID of the patient to update", required = true, example = "1")
-    }, responses = {
-            @ApiResponse(responseCode = "200", description = "Patient updated successfully", content = @Content(schema = @Schema(implementation = Patient.class))),
-            @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<Patient> updatePatient(
-            @PathVariable Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Patient object with fields to update") @org.springframework.web.bind.annotation.RequestBody @Valid Patient patient) {
-        logger.debug("Received update request for patient id: {}", id);
-        if (patient == null) {
-            logger.warn("Update request body is null for patient id: {}", id);
-            return ResponseEntity.badRequest().build();
-        }
-        logger.debug("Update request data: {}", patient);
-
-        Patient updatedPatient = patientService.updatePatient(id, patient);
-        if (updatedPatient == null) {
-            logger.warn("Patient not found for update with id: {}", id);
-            return ResponseEntity.notFound().build();
-        }
-        logger.debug("Successfully updated patient with id: {}", id);
-        return ResponseEntity.ok(updatedPatient);
+    Patient updatedPatient = patientService.updatePatient(id, patient);
+    if (updatedPatient == null) {
+      logger.warn("Patient not found for update with id: {}", id);
+      return ResponseEntity.notFound().build();
     }
+    logger.debug("Successfully updated patient with id: {}", id);
+    return ResponseEntity.ok(updatedPatient);
+  }
+
+  @Operation(
+      summary = "Delete patient by id",
+      description = "Deletes a patient from the system using the provided id.",
+      parameters = {
+        @io.swagger.v3.oas.annotations.Parameter(
+            name = "id",
+            description = "ID of the patient to delete",
+            required = true,
+            example = "1")
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "204",
+            description = "Patient deleted successfully",
+            content = @Content),
+        @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
+      })
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deletePatientById(@PathVariable Long id) {
+    logger.debug("Received delete request for patient id: {}", id);
+    try {
+      patientService.deletePatient(id);
+      logger.debug("Successfully deleted patient with id: {}", id);
+      return ResponseEntity.noContent().build();
+    } catch (
+        RuntimeException
+            e) { // Assuming a generic RuntimeException for now, should be more specific later if
+      // needed
+      logger.warn("Patient not found for deletion with id: {}", id);
+      return ResponseEntity.notFound().build();
+    }
+  }
 }

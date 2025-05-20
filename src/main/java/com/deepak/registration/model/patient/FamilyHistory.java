@@ -14,12 +14,12 @@ import lombok.Setter;
 @Builder
 public class FamilyHistory {
 
-    @Schema(description = "Family history of diabetes", example = "true")
-    private Boolean diabetes;
+  @Schema(description = "Family history of diabetes", example = "true")
+  private Boolean diabetes;
 
-    @Schema(description = "Family history of hypertension", example = "false")
-    private Boolean hypertension;
+  @Schema(description = "Family history of hypertension", example = "false")
+  private Boolean hypertension;
 
-    @Schema(description = "Family history of heart disease", example = "true")
-    private Boolean heartDisease;
+  @Schema(description = "Family history of heart disease", example = "true")
+  private Boolean heartDisease;
 }
