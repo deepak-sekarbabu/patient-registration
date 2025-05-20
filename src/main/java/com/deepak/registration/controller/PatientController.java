@@ -20,11 +20,12 @@ import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Patients", description = "Operations related to patient registration and management")
 @RestController
-@RequestMapping("/api/patients")
+@RequestMapping("v1/api/patients")
 @RequiredArgsConstructor
 public class PatientController {
 
     private final PatientService patientService;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(PatientController.class);
 
     @Operation(summary = "Create a new patient", description = "Registers a new patient in the system and returns the saved patient details.", requestBody = @RequestBody(required = true, description = "Patient object to be created", content = @Content(schema = @Schema(implementation = Patient.class))), responses = {
             @ApiResponse(responseCode = "200", description = "Patient created successfully", content = @Content(schema = @Schema(implementation = Patient.class))),
@@ -46,6 +47,23 @@ public class PatientController {
     public ResponseEntity<Patient> getPatientByPhoneNumber(@RequestParam String phoneNumber) {
         Patient patient = patientService.getPatientByPhoneNumber(phoneNumber);
         if (patient == null) {
+            logger.warn("Patient not found for phone number: {}", phoneNumber);
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(patient);
+    }
+
+    @Operation(summary = "Get patient by id", description = "Retrieves patient information using the provided id.", parameters = {
+            @io.swagger.v3.oas.annotations.Parameter(name = "id", description = "ID of the patient", required = true, example = "1")
+    }, responses = {
+            @ApiResponse(responseCode = "200", description = "Patient found", content = @Content(schema = @Schema(implementation = Patient.class))),
+            @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
+    })
+    @GetMapping("/by-id")
+    public ResponseEntity<Patient> getPatientById(@RequestParam Long id) {
+        Patient patient = patientService.getPatientById(id);
+        if (patient == null) {
+            logger.warn("Patient not found for id: {}", id);
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(patient);

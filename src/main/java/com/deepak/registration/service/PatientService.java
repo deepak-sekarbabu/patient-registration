@@ -26,4 +26,9 @@ public class PatientService {
         logger.debug("Fetching patient by phone number: {}", phoneNumber);
         return patientRepository.findByPhoneNumber(phoneNumber).orElse(null);
     }
+
+    public Patient getPatientById(Long id) {
+        logger.debug("Fetching patient by id: {}", id);
+        return patientRepository.findById(id).orElse(null);
+    }
 }
