@@ -2,18 +2,35 @@ package com.deepak.registration.model.patient;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MedicalInfo {
+    @Pattern(regexp = "^(A|B|AB|O)[+-]$", message = "Invalid blood group")
+    @Schema(description = "Blood group of the patient", example = "B+")
     private String bloodGroup;
+
+    @Schema(description = "List of allergies", example = "[\"Penicillin\", \"Dust\"]")
     private List<String> allergies;
+
+    @Schema(description = "List of existing medical conditions", example = "[\"Asthma\"]")
     private List<String> existingConditions;
+
+    @Schema(description = "List of current medications", example = "[\"Salbutamol inhaler\"]")
     private List<String> currentMedications;
+
+    @Valid
+    @Schema(description = "Family medical history")
     private FamilyHistory familyHistory;
 }
-

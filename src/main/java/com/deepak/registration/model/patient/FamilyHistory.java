@@ -1,14 +1,25 @@
 package com.deepak.registration.model.patient;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class FamilyHistory {
-    private boolean diabetes;
-    private boolean hypertension;
-    private boolean heartDisease;
+
+    @Schema(description = "Family history of diabetes", example = "true")
+    private Boolean diabetes;
+
+    @Schema(description = "Family history of hypertension", example = "false")
+    private Boolean hypertension;
+
+    @Schema(description = "Family history of heart disease", example = "true")
+    private Boolean heartDisease;
 }
