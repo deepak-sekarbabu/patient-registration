@@ -1,11 +1,15 @@
 package com.deepak.registration.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.deepak.registration.model.patient.Patient;
 import com.deepak.registration.service.PatientService;
@@ -22,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("v1/api/patients")
 @RequiredArgsConstructor
+@Validated
 public class PatientController {
 
     private final PatientService patientService;
@@ -67,5 +72,32 @@ public class PatientController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(patient);
+    }
+
+    @Operation(summary = "Update patient information", description = "Updates an existing patient's information in the system.", requestBody = @RequestBody(required = true, description = "Updated patient object (only include fields to update)", content = @Content(schema = @Schema(implementation = Patient.class))), parameters = {
+            @io.swagger.v3.oas.annotations.Parameter(name = "id", description = "ID of the patient to update", required = true, example = "1")
+    }, responses = {
+            @ApiResponse(responseCode = "200", description = "Patient updated successfully", content = @Content(schema = @Schema(implementation = Patient.class))),
+            @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Patient> updatePatient(
+            @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Patient object with fields to update") @org.springframework.web.bind.annotation.RequestBody @Valid Patient patient) {
+        logger.debug("Received update request for patient id: {}", id);
+        if (patient == null) {
+            logger.warn("Update request body is null for patient id: {}", id);
+            return ResponseEntity.badRequest().build();
+        }
+        logger.debug("Update request data: {}", patient);
+
+        Patient updatedPatient = patientService.updatePatient(id, patient);
+        if (updatedPatient == null) {
+            logger.warn("Patient not found for update with id: {}", id);
+            return ResponseEntity.notFound().build();
+        }
+        logger.debug("Successfully updated patient with id: {}", id);
+        return ResponseEntity.ok(updatedPatient);
     }
 }

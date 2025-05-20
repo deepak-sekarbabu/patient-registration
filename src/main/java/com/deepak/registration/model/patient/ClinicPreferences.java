@@ -23,8 +23,8 @@ public class ClinicPreferences {
     @Size(min = 2, max = 30)
     @Schema(description = "Preferred language for communication", example = "English")
     private String preferredLanguage;
+
     @NotNull
-    @Size(min = 1, max = 5)
     @AllowedCommunicationMethods
     @Schema(description = "Preferred communication methods", example = "[\"Email\", \"SMS\", \"Whatsapp\"]")
     private List<String> communicationMethod;

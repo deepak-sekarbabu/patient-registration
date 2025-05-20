@@ -14,8 +14,16 @@ public class AllowedCommunicationMethodsValidator
 
     @Override
     public boolean isValid(List<String> value, ConstraintValidatorContext context) {
-        if (value == null)
-            return true;
-        return value.stream().allMatch(ALLOWED::contains);
+        if (value == null || value.isEmpty()) {
+            return false; // At least one method must be selected
+        }
+        
+        // Only one method can be selected
+        if (value.size() != 1) {
+            return false;
+        }
+        
+        // The selected method must be one of the allowed values
+        return ALLOWED.contains(value.get(0));
     }
 }

@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 @Target({ FIELD })
 @Retention(RUNTIME)
 public @interface AllowedCommunicationMethods {
-    String message() default "Each communication method must be one of: Email, SMS, Whatsapp";
+    String message() default "Only one communication method is allowed. Please select one of: Email, SMS, or Whatsapp";
 
     Class<?>[] groups() default {};
 

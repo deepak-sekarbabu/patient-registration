@@ -6,6 +6,7 @@ import com.deepak.registration.model.patient.converter.InsuranceDetailsConverter
 import com.deepak.registration.model.patient.converter.MedicalInfoConverter;
 import com.deepak.registration.model.patient.converter.PersonalDetailsConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +33,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Patient entity containing all registration details")
 public class Patient {
 
