@@ -1,0 +1,47 @@
+package com.deepak.registration.service;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+
+import com.deepak.registration.model.patient.Patient;
+import com.deepak.registration.repository.PatientRepository;
+
+public class PatientServiceTest {
+
+    @Mock
+    private PatientRepository patientRepository;
+
+    @InjectMocks
+    private PatientService patientService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testCreatePatient() {
+        Patient patient = new Patient();
+        when(patientRepository.save(any(Patient.class))).thenReturn(patient);
+        Patient result = patientService.createPatient(patient);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetPatientById() {
+        Patient patient = new Patient();
+        when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+        Patient result = patientService.getPatientById(1L);
+        assertNotNull(result);
+    }
+
+    // Add more tests for update, delete, get by phone, etc.
+}
