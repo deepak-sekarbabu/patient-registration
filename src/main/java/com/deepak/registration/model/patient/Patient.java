@@ -7,6 +7,7 @@ import com.deepak.registration.model.patient.converter.MedicalInfoConverter;
 import com.deepak.registration.model.patient.converter.PersonalDetailsConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -43,10 +44,8 @@ public class Patient {
   private Long id;
 
   @Column(name = "phone_number")
-  @Pattern(
-      regexp = "^\\+91[0-9]{10}$",
-      message = "Phone number must start with +91 and be followed by 10 digits")
-  @Schema(description = "Patient's phone number", example = "+919876543210")
+  @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be exactly 10 digits")
+  @Schema(description = "Patient's phone number", example = "9876543210")
   private String phoneNumber;
 
   @Convert(converter = PersonalDetailsConverter.class)
