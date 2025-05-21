@@ -1,0 +1,69 @@
+-- -------------------------------------------------------------------------------
+-- -----------------------------Registration Tables-------------------------------
+-- -------------------------------------------------------------------------------
+-- Use database
+USE QueueManagement;
+
+-- Patient Registration Table
+CREATE TABLE
+    IF NOT EXISTS patients (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        phone_number CHAR(10) NOT NULL,
+        personal_details JSON,
+        medical_info JSON,
+        insurance_details JSON,
+        emergency_contact JSON,
+        clinic_preferences JSON,
+        UNIQUE KEY uq_phone_number (phone_number)
+    );
+
+-- Appointments Table
+CREATE TABLE
+    IF NOT EXISTS appointments (
+        appointment_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+        patient_id INTEGER NOT NULL,
+        appointment_type VARCHAR(50) NOT NULL,
+        appointment_for VARCHAR(10) NOT NULL,
+        appointment_for_name VARCHAR(255) NOT NULL,
+        appointment_for_age INTEGER,
+        symptom VARCHAR(255),
+        other_symptoms VARCHAR(255),
+        appointment_date DATETIME NOT NULL,
+        slot_id INTEGER,
+        doctor_id VARCHAR(50) NOT NULL,
+        clinic_id INTEGER NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT TRUE,
+        CONSTRAINT patient_fk FOREIGN KEY (patient_id) REFERENCES patients (id),
+        CONSTRAINT doctor_fk FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id),
+        CONSTRAINT clinic_fk FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+        CONSTRAINT slot_fk FOREIGN KEY (slot_id) REFERENCES slot_information (slot_id),
+        UNIQUE KEY uq_slot_id (slot_id)
+    );
+
+-- Queue Management Table
+CREATE TABLE
+    IF NOT EXISTS queue_management (
+        queue_management_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+        appointment_id INTEGER,
+        slot_id INTEGER,
+        clinic_id INTEGER,
+        doctor_id VARCHAR(50),
+        initial_queue_no INTEGER,
+        current_queue_no INTEGER,
+        advance_paid BOOLEAN,
+        cancelled BOOLEAN,
+        deleted BOOLEAN DEFAULT FALSE,
+        advance_revert_if_paid BOOLEAN,
+        patient_reached BOOLEAN,
+        visit_status VARCHAR(255),
+        consultation_fee_paid BOOLEAN,
+        consultation_fee_amount DECIMAL(10, 2),
+        transaction_id_advance_fee VARCHAR(255),
+        transaction_id_consultation_fee VARCHAR(255),
+        transaction_id_advance_revert VARCHAR(255),
+        queue_date DATE,
+        FOREIGN KEY (slot_id) REFERENCES slot_information (slot_id),
+        FOREIGN KEY (appointment_id) REFERENCES appointments (appointment_id),
+        FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+        FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id)
+    );

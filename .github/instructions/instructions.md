@@ -4,7 +4,7 @@
 
 You are working on a **Java 21+** Spring Boot application that uses:
 
-- Spring Boot 3.2+
+- Spring Boot 3.4 +
 - MySQL as the relational database
 - Spring Data JPA with Hibernate
 - Maven for build and dependency management
@@ -23,7 +23,7 @@ You are working on a **Java 21+** Spring Boot application that uses:
 - Use **Spring Boot annotations** like `@RestController`, `@Service`, `@Repository`, `@Entity`
 - Prefer **constructor injection** with `@RequiredArgsConstructor` (Lombok)
 - Use **JPA annotations** for entity mapping
-- Use **DTOs** to decouple persistence and API layers
+- Use **Models** for persistence and API layers
 - Implement **global exception handling** using `@ControllerAdvice`
 - Add **input validation** using `@Valid`, `@NotBlank`, `@Size`, etc.
 
@@ -55,13 +55,29 @@ You are working on a **Java 21+** Spring Boot application that uses:
 
 ---
 
-### Comments to Guide Copilot
+### Testing
 
-Use these example comment prompts to get useful Copilot suggestions:
+- Write unit and integration tests for all business logic and API endpoints
+- Use **JUnit 5** and **Mockito** for testing
+- Use **@SpringBootTest** for integration tests
+- Ensure high code coverage and meaningful assertions
+- Mock external dependencies in unit tests
 
-```java
-// Define a JPA entity for Customer with fields: id, name, email (unique), createdAt. Use Lombok.
-// Create a REST controller for Product with CRUD operations and pagination
-// Add caching to the getUserById method in the UserService using Spring Cache
-// Implement async email sending with @Async in EmailService
-// Add global exception handling with @ControllerAdvice and custom error response
+---
+
+### Code Formatting & Quality
+
+- Follow standard Java formatting conventions (Google Java Style or similar)
+- Use tools like **Checkstyle**, **Spotless**, or **EditorConfig** for consistent formatting
+- Use meaningful variable, method, and class names
+- Keep methods short and focused
+- Avoid code duplication and follow DRY principles
+
+---
+
+### Documentation
+
+- Use **JavaDoc** for public classes and methods
+- Document API endpoints using **Swagger/OpenAPI** annotations
+- Maintain a **README.md** file with project setup, build, and run instructions
+- Use **Markdown** for documentation
