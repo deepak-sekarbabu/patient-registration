@@ -45,28 +45,24 @@ public class PatientService {
 
   public Patient updatePatient(Long id, Patient updatedPatient) {
     logger.debug("Updating patient with id: {}", id);
-    return patientRepository
-        .findById(id)
-        .map(
-            existingPatient -> {
-              if (updatedPatient.getPersonalDetails() != null) {
-                existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
-              }
-              if (updatedPatient.getMedicalInfo() != null) {
-                existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
-              }
-              if (updatedPatient.getEmergencyContact() != null) {
-                existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
-              }
-              if (updatedPatient.getInsuranceDetails() != null) {
-                existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
-              }
-              if (updatedPatient.getClinicPreferences() != null) {
-                existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
-              }
-              return patientRepository.save(existingPatient);
-            })
-        .orElse(null);
+    return patientRepository.findById(id).map(existingPatient -> {
+      if (updatedPatient.getPersonalDetails() != null) {
+        existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
+      }
+      if (updatedPatient.getMedicalInfo() != null) {
+        existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
+      }
+      if (updatedPatient.getEmergencyContact() != null) {
+        existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
+      }
+      if (updatedPatient.getInsuranceDetails() != null) {
+        existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
+      }
+      if (updatedPatient.getClinicPreferences() != null) {
+        existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
+      }
+      return patientRepository.save(existingPatient);
+    }).orElse(null);
   }
 
   public void deletePatient(Long id) {
@@ -76,6 +72,21 @@ public class PatientService {
     } else {
       logger.warn("Patient not found for deletion with id: {}", id);
       throw new RuntimeException("Patient not found"); // Or a more specific exception
+    }
+  }
+
+  public Patient validateLogin(String phoneNumber, String password) {
+    Patient patient = getPatientByPhoneNumber(phoneNumber);
+    if (patient == null) {
+      logger.warn("Login failed: patient not found for phone number {}", phoneNumber);
+      return null;
+    }
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    if (encoder.matches(password, patient.getPasswordHash())) {
+      return patient;
+    } else {
+      logger.warn("Login failed: invalid password for phone number {}", phoneNumber);
+      return null;
     }
   }
 }
