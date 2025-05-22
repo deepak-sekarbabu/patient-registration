@@ -4,16 +4,22 @@
 -- Use database
 USE QueueManagement;
 
+DROP TABLE IF EXISTS patients;
+
 -- Patient Registration Table
 CREATE TABLE
     IF NOT EXISTS patients (
         id INT AUTO_INCREMENT PRIMARY KEY,
         phone_number CHAR(10) NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
         personal_details JSON,
         medical_info JSON,
         insurance_details JSON,
         emergency_contact JSON,
         clinic_preferences JSON,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        using_default_password BOOLEAN NOT NULL DEFAULT TRUE,
         UNIQUE KEY uq_phone_number (phone_number)
     );
 

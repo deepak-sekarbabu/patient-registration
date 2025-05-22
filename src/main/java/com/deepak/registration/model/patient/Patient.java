@@ -72,4 +72,11 @@ public class Patient {
   @Column(columnDefinition = "json")
   @Schema(description = "Clinic communication preferences")
   private ClinicPreferences clinicPreferences;
+
+  @Column(name = "password_hash", nullable = false)
+  private String passwordHash;
+
+  @Builder.Default
+  @Column(name = "using_default_password", nullable = false)
+  private boolean usingDefaultPassword = true;
 }

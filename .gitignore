@@ -49,4 +49,4 @@ target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputF
 target/surefire-reports/com.deepak.registration.RegistrationApplicationTests.txt
 target/surefire-reports/TEST-com.deepak.registration.RegistrationApplicationTests.xml
 target/test-ids/junit-platform-unique-ids-9187225289561995535.txt
-target/spotless-index
+target/**

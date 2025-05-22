@@ -9,7 +9,7 @@ You are working on a **Java 21+** Spring Boot application that uses:
 - Spring Data JPA with Hibernate
 - Maven for build and dependency management
 - Layered architecture: Controller → Service → Repository
-- RESTful API design with DTOs and validation
+- RESTful API design with Models and validation
 - Performance optimizations like caching and async processing
 - Clean, maintainable, and testable code using modern Java features
 
