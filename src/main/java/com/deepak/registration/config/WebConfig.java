@@ -5,19 +5,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Web configuration for the application. Configures CORS to allow cross-origin requests from any
- * origin.
+ * Web configuration for the application. Configures CORS to allow cross-origin requests from the
+ * frontend origin and exposes the XSRF-TOKEN header for CSRF support.
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
-    registry
-        .addMapping("/**")
-        .allowedOrigins("*")
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        .allowedHeaders("*")
-        .maxAge(3600);
+    registry.addMapping("/**").allowedOrigins("http://localhost:3000") // Use your frontend origin
+        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS").allowedHeaders("*")
+        .allowCredentials(true).exposedHeaders("XSRF-TOKEN").maxAge(3600);
   }
 }

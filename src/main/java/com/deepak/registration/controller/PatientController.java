@@ -1,18 +1,7 @@
 package com.deepak.registration.controller;
 
-import com.deepak.registration.model.patient.Patient;
-import com.deepak.registration.model.patient.LoginRequest;
-import com.deepak.registration.service.PatientService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,13 +9,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.deepak.registration.model.patient.LoginRequest;
+import com.deepak.registration.model.patient.Patient;
+import com.deepak.registration.service.PatientService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "Patients", description = "Operations related to patient registration and management")
 @RestController
 @RequestMapping("v1/api/patients")
-@Validated
 public class PatientController {
 
   private final PatientService patientService;
@@ -39,7 +37,8 @@ public class PatientController {
 
   @Operation(summary = "Create a new patient",
       description = "Registers a new patient in the system and returns the saved patient details.",
-      requestBody = @RequestBody(required = true, description = "Patient object to be created",
+      requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
+          description = "Patient object to be created",
           content = @Content(schema = @Schema(implementation = Patient.class))),
       responses = {
           @ApiResponse(responseCode = "200", description = "Patient created successfully",
@@ -105,7 +104,7 @@ public class PatientController {
 
   @Operation(summary = "Update patient information",
       description = "Updates an existing patient's information in the system.",
-      requestBody = @RequestBody(required = true,
+      requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
           description = "Updated patient object (only include fields to update)",
           content = @Content(schema = @Schema(implementation = Patient.class))),
       parameters = {@io.swagger.v3.oas.annotations.Parameter(name = "id",
@@ -161,7 +160,7 @@ public class PatientController {
 
   @Operation(summary = "Validate patient login",
       description = "Validates login credentials and returns patient info if successful.",
-      requestBody = @RequestBody(required = true,
+      requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
           description = "Login request with phone number and password",
           content = @Content(schema = @Schema(implementation = LoginRequest.class))),
       responses = {
