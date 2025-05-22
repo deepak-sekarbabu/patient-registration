@@ -15,7 +15,8 @@ public class GlobalExceptionHandler {
       DataIntegrityViolationException ex) {
     String message = "A data integrity violation occurred.";
     Throwable rootCause = (ex != null) ? ex.getRootCause() : null;
-    if (rootCause != null && rootCause.getMessage() != null
+    if (rootCause != null
+        && rootCause.getMessage() != null
         && rootCause.getMessage().contains("uq_phone_number")) {
       message = "User Already exists.";
     }

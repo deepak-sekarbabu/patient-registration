@@ -4,8 +4,6 @@
 -- Use database
 USE QueueManagement;
 
-DROP TABLE IF EXISTS patients;
-
 -- Patient Registration Table
 CREATE TABLE
     IF NOT EXISTS patients (

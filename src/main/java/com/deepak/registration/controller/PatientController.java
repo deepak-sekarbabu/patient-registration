@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,13 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Patients", description = "Operations related to patient registration and management")
 @RestController
 @RequestMapping("v1/api/patients")
-@RequiredArgsConstructor
 @Validated
 public class PatientController {
 
   private final PatientService patientService;
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(PatientController.class);
+
+  public PatientController(PatientService patientService) {
+    this.patientService = patientService;
+  }
 
   @Operation(
       summary = "Create a new patient",
@@ -79,6 +81,29 @@ public class PatientController {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(patient);
+  }
+
+  @Operation(
+      summary = "Check if user exists by phone number",
+      description =
+          "Returns true if a patient exists with the given phone number, false otherwise.",
+      parameters = {
+        @io.swagger.v3.oas.annotations.Parameter(
+            name = "phoneNumber",
+            description = "Phone number to check existence",
+            required = true,
+            example = "9876543210")
+      },
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Existence result",
+            content = @Content(schema = @Schema(implementation = Boolean.class)))
+      })
+  @GetMapping("/exists-by-phone")
+  public ResponseEntity<Boolean> existsByPhoneNumber(@RequestParam String phoneNumber) {
+    boolean exists = patientService.existsByPhoneNumber(phoneNumber);
+    return ResponseEntity.ok(exists);
   }
 
   @Operation(
@@ -179,9 +204,8 @@ public class PatientController {
       patientService.deletePatient(id);
       logger.debug("Successfully deleted patient with id: {}", id);
       return ResponseEntity.noContent().build();
-    } catch (
-        RuntimeException
-            e) { // Assuming a generic RuntimeException for now, should be more specific later if
+    } catch (RuntimeException e) { // Assuming a generic RuntimeException for now, should be more
+      // specific later if
       // needed
       logger.warn("Patient not found for deletion with id: {}", id);
       return ResponseEntity.notFound().build();

@@ -1,22 +1,22 @@
 package com.deepak.registration.service;
 
+import com.deepak.registration.model.patient.Patient;
+import com.deepak.registration.repository.PatientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.deepak.registration.model.patient.Patient;
-import com.deepak.registration.repository.PatientRepository;
-
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class PatientService {
 
   private static final Logger logger = LoggerFactory.getLogger(PatientService.class);
 
   private final PatientRepository patientRepository;
+
+  public PatientService(PatientRepository patientRepository) {
+    this.patientRepository = patientRepository;
+  }
 
   public Patient createPatient(Patient patient) {
     logger.debug("Creating patient: {}", patient);
@@ -34,6 +34,10 @@ public class PatientService {
     return patientRepository.findByPhoneNumber(phoneNumber).orElse(null);
   }
 
+  public boolean existsByPhoneNumber(String phoneNumber) {
+    return patientRepository.findByPhoneNumber(phoneNumber).isPresent();
+  }
+
   public Patient getPatientById(Long id) {
     logger.debug("Fetching patient by id: {}", id);
     return patientRepository.findById(id).orElse(null);
@@ -41,24 +45,28 @@ public class PatientService {
 
   public Patient updatePatient(Long id, Patient updatedPatient) {
     logger.debug("Updating patient with id: {}", id);
-    return patientRepository.findById(id).map(existingPatient -> {
-      if (updatedPatient.getPersonalDetails() != null) {
-        existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
-      }
-      if (updatedPatient.getMedicalInfo() != null) {
-        existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
-      }
-      if (updatedPatient.getEmergencyContact() != null) {
-        existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
-      }
-      if (updatedPatient.getInsuranceDetails() != null) {
-        existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
-      }
-      if (updatedPatient.getClinicPreferences() != null) {
-        existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
-      }
-      return patientRepository.save(existingPatient);
-    }).orElse(null);
+    return patientRepository
+        .findById(id)
+        .map(
+            existingPatient -> {
+              if (updatedPatient.getPersonalDetails() != null) {
+                existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
+              }
+              if (updatedPatient.getMedicalInfo() != null) {
+                existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
+              }
+              if (updatedPatient.getEmergencyContact() != null) {
+                existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
+              }
+              if (updatedPatient.getInsuranceDetails() != null) {
+                existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
+              }
+              if (updatedPatient.getClinicPreferences() != null) {
+                existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
+              }
+              return patientRepository.save(existingPatient);
+            })
+        .orElse(null);
   }
 
   public void deletePatient(Long id) {

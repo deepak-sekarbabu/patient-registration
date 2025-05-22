@@ -7,7 +7,6 @@ import com.deepak.registration.model.patient.converter.MedicalInfoConverter;
 import com.deepak.registration.model.patient.converter.PersonalDetailsConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
