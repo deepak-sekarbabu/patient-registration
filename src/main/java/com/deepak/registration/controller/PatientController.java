@@ -51,7 +51,9 @@ public class PatientController {
   @PostMapping
   public ResponseEntity<Patient> createPatient(
       @org.springframework.web.bind.annotation.RequestBody Patient patient) {
+    logger.info("Creating new patient with phone number: {}", patient.getPhoneNumber());
     Patient savedPatient = patientService.createPatient(patient);
+    logger.info("Successfully created patient with id: {}", savedPatient.getId());
     return ResponseEntity.ok(savedPatient);
   }
 
@@ -163,6 +165,7 @@ public class PatientController {
           @org.springframework.web.bind.annotation.RequestBody
           @Valid
           Patient patient) {
+    logger.info("Updating patient with id: {}", id);
     logger.debug("Received update request for patient id: {}", id);
     if (patient == null) {
       logger.warn("Update request body is null for patient id: {}", id);
@@ -175,6 +178,7 @@ public class PatientController {
       logger.warn("Patient not found for update with id: {}", id);
       return ResponseEntity.notFound().build();
     }
+    logger.info("Successfully updated patient with id: {}", id);
     logger.debug("Successfully updated patient with id: {}", id);
     return ResponseEntity.ok(updatedPatient);
   }
@@ -198,9 +202,11 @@ public class PatientController {
       })
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deletePatientById(@PathVariable Long id) {
+    logger.info("Deleting patient with id: {}", id);
     logger.debug("Received delete request for patient id: {}", id);
     try {
       patientService.deletePatient(id);
+      logger.info("Successfully deleted patient with id: {}", id);
       logger.debug("Successfully deleted patient with id: {}", id);
       return ResponseEntity.noContent().build();
     } catch (RuntimeException e) { // Assuming a generic RuntimeException for now, should be more
