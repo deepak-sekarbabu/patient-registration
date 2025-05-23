@@ -13,8 +13,13 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**").allowedOrigins("http://localhost:3000") // Use your frontend origin
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS").allowedHeaders("*")
-        .allowCredentials(true).exposedHeaders("XSRF-TOKEN").maxAge(3600);
+    registry
+        .addMapping("/**")
+        .allowedOrigins("http://localhost:3000") // Use your frontend origin
+        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        .allowedHeaders("*")
+        .allowCredentials(true)
+        .exposedHeaders("XSRF-TOKEN")
+        .maxAge(3600);
   }
 }

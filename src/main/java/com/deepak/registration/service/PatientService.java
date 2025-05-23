@@ -45,24 +45,28 @@ public class PatientService {
 
   public Patient updatePatient(Long id, Patient updatedPatient) {
     logger.debug("Updating patient with id: {}", id);
-    return patientRepository.findById(id).map(existingPatient -> {
-      if (updatedPatient.getPersonalDetails() != null) {
-        existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
-      }
-      if (updatedPatient.getMedicalInfo() != null) {
-        existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
-      }
-      if (updatedPatient.getEmergencyContact() != null) {
-        existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
-      }
-      if (updatedPatient.getInsuranceDetails() != null) {
-        existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
-      }
-      if (updatedPatient.getClinicPreferences() != null) {
-        existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
-      }
-      return patientRepository.save(existingPatient);
-    }).orElse(null);
+    return patientRepository
+        .findById(id)
+        .map(
+            existingPatient -> {
+              if (updatedPatient.getPersonalDetails() != null) {
+                existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
+              }
+              if (updatedPatient.getMedicalInfo() != null) {
+                existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
+              }
+              if (updatedPatient.getEmergencyContact() != null) {
+                existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
+              }
+              if (updatedPatient.getInsuranceDetails() != null) {
+                existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
+              }
+              if (updatedPatient.getClinicPreferences() != null) {
+                existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
+              }
+              return patientRepository.save(existingPatient);
+            })
+        .orElse(null);
   }
 
   public void deletePatient(Long id) {
