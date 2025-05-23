@@ -2,6 +2,7 @@ package com.deepak.registration.controller;
 
 import com.deepak.registration.model.patient.LoginRequest;
 import com.deepak.registration.model.patient.Patient;
+import com.deepak.registration.model.patient.UpdatePasswordRequest;
 import com.deepak.registration.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -242,5 +244,12 @@ public class PatientController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     return ResponseEntity.ok(patient);
+  }
+
+  @PostMapping("/{id}/password")
+  public ResponseEntity<String> updatePassword(
+      @PathVariable Long id, @RequestBody UpdatePasswordRequest request) {
+    patientService.updatePassword(id, request.getNewPassword());
+    return ResponseEntity.ok("Password updated successfully.");
   }
 }

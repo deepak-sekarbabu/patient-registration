@@ -2,6 +2,7 @@ package com.deepak.registration.service;
 
 import com.deepak.registration.model.patient.Patient;
 import com.deepak.registration.repository.PatientRepository;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -92,5 +93,26 @@ public class PatientService {
       logger.warn("Login failed: invalid password for phone number {}", phoneNumber);
       return null;
     }
+  }
+
+  public void updatePassword(Long patientId, String newPassword) {
+    Patient patient =
+        patientRepository
+            .findById(patientId)
+            .orElseThrow(() -> new RuntimeException("Patient not found with id: " + patientId));
+
+    // Hash the password appropriately here.
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    if (newPassword == null || newPassword.isEmpty()) {
+      throw new IllegalArgumentException("New password cannot be null or empty");
+    }
+    patient.setPasswordHash(encoder.encode(newPassword));
+
+    patient.setUpdatedAt(LocalDateTime.now());
+
+    // Set the flag to false since a new password is provided.
+    patient.setUsingDefaultPassword(false);
+
+    patientRepository.save(patient);
   }
 }

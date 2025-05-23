@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,6 +75,9 @@ public class Patient {
 
   @Column(name = "password_hash", nullable = false)
   private String passwordHash;
+
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
   @Builder.Default
   @Column(name = "using_default_password", nullable = false)
