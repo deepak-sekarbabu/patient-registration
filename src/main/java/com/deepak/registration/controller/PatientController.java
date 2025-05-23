@@ -1,8 +1,10 @@
 package com.deepak.registration.controller;
 
 import com.deepak.registration.model.patient.LoginRequest;
+import com.deepak.registration.model.patient.LoginResponse;
 import com.deepak.registration.model.patient.Patient;
 import com.deepak.registration.model.patient.UpdatePasswordRequest;
+import com.deepak.registration.security.TokenProvider;
 import com.deepak.registration.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,11 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientController {
 
   private final PatientService patientService;
+  private final TokenProvider tokenProvider;
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(PatientController.class);
 
-  public PatientController(PatientService patientService) {
+  public PatientController(PatientService patientService, TokenProvider tokenProvider) {
     this.patientService = patientService;
+    this.tokenProvider = tokenProvider;
   }
 
   @Operation(
@@ -53,6 +57,7 @@ public class PatientController {
   @PostMapping
   public ResponseEntity<Patient> createPatient(
       @org.springframework.web.bind.annotation.RequestBody Patient patient) {
+    logger.info("Received request: Create new patient");
     logger.info("Creating new patient with phone number: {}", patient.getPhoneNumber());
     Patient savedPatient = patientService.createPatient(patient);
     logger.info("Successfully created patient with id: {}", savedPatient.getId());
@@ -62,13 +67,12 @@ public class PatientController {
   @Operation(
       summary = "Get patient by phone number",
       description = "Retrieves patient information using the provided phone number.",
-      parameters = {
-        @io.swagger.v3.oas.annotations.Parameter(
-            name = "phoneNumber",
-            description = "Phone number of the patient",
-            required = true,
-            example = "+919789801844")
-      },
+      parameters =
+          @io.swagger.v3.oas.annotations.Parameter(
+              name = "phoneNumber",
+              description = "Phone number of the patient",
+              required = true,
+              example = "+919789801844"),
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -78,11 +82,13 @@ public class PatientController {
       })
   @GetMapping("/by-phone")
   public ResponseEntity<Patient> getPatientByPhoneNumber(@RequestParam String phoneNumber) {
+    logger.info("Received request: Get patient by phone number: {}", phoneNumber);
     Patient patient = patientService.getPatientByPhoneNumber(phoneNumber);
     if (patient == null) {
       logger.warn("Patient not found for phone number: {}", phoneNumber);
       return ResponseEntity.notFound().build();
     }
+    logger.info("Patient found for phone number: {}", phoneNumber);
     return ResponseEntity.ok(patient);
   }
 
@@ -90,13 +96,12 @@ public class PatientController {
       summary = "Check if user exists by phone number",
       description =
           "Returns true if a patient exists with the given phone number, false otherwise.",
-      parameters = {
-        @io.swagger.v3.oas.annotations.Parameter(
-            name = "phoneNumber",
-            description = "Phone number to check existence",
-            required = true,
-            example = "9876543210")
-      },
+      parameters =
+          @io.swagger.v3.oas.annotations.Parameter(
+              name = "phoneNumber",
+              description = "Phone number to check existence",
+              required = true,
+              example = "9876543210"),
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -105,20 +110,21 @@ public class PatientController {
       })
   @GetMapping("/exists-by-phone")
   public ResponseEntity<Boolean> existsByPhoneNumber(@RequestParam String phoneNumber) {
+    logger.info("Received request: Check if patient exists by phone number: {}", phoneNumber);
     boolean exists = patientService.existsByPhoneNumber(phoneNumber);
+    logger.info("Existence check for phone number {}: {}", phoneNumber, exists);
     return ResponseEntity.ok(exists);
   }
 
   @Operation(
       summary = "Get patient by id",
       description = "Retrieves patient information using the provided id.",
-      parameters = {
-        @io.swagger.v3.oas.annotations.Parameter(
-            name = "id",
-            description = "ID of the patient",
-            required = true,
-            example = "1")
-      },
+      parameters =
+          @io.swagger.v3.oas.annotations.Parameter(
+              name = "id",
+              description = "ID of the patient",
+              required = true,
+              example = "1"),
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -128,11 +134,13 @@ public class PatientController {
       })
   @GetMapping("/by-id")
   public ResponseEntity<Patient> getPatientById(@RequestParam Long id) {
+    logger.info("Received request: Get patient by id: {}", id);
     Patient patient = patientService.getPatientById(id);
     if (patient == null) {
       logger.warn("Patient not found for id: {}", id);
       return ResponseEntity.notFound().build();
     }
+    logger.info("Patient found for id: {}", id);
     return ResponseEntity.ok(patient);
   }
 
@@ -144,13 +152,12 @@ public class PatientController {
               required = true,
               description = "Updated patient object (only include fields to update)",
               content = @Content(schema = @Schema(implementation = Patient.class))),
-      parameters = {
-        @io.swagger.v3.oas.annotations.Parameter(
-            name = "id",
-            description = "ID of the patient to update",
-            required = true,
-            example = "1")
-      },
+      parameters =
+          @io.swagger.v3.oas.annotations.Parameter(
+              name = "id",
+              description = "ID of the patient to update",
+              required = true,
+              example = "1"),
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -167,7 +174,7 @@ public class PatientController {
           @org.springframework.web.bind.annotation.RequestBody
           @Valid
           Patient patient) {
-    logger.info("Updating patient with id: {}", id);
+    logger.info("Received request: Update patient with id: {}", id);
     logger.debug("Received update request for patient id: {}", id);
     if (patient == null) {
       logger.warn("Update request body is null for patient id: {}", id);
@@ -188,13 +195,12 @@ public class PatientController {
   @Operation(
       summary = "Delete patient by id",
       description = "Deletes a patient from the system using the provided id.",
-      parameters = {
-        @io.swagger.v3.oas.annotations.Parameter(
-            name = "id",
-            description = "ID of the patient to delete",
-            required = true,
-            example = "1")
-      },
+      parameters =
+          @io.swagger.v3.oas.annotations.Parameter(
+              name = "id",
+              description = "ID of the patient to delete",
+              required = true,
+              example = "1"),
       responses = {
         @ApiResponse(
             responseCode = "204",
@@ -204,6 +210,7 @@ public class PatientController {
       })
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deletePatientById(@PathVariable Long id) {
+    logger.info("Received request: Delete patient by id: {}", id);
     logger.info("Deleting patient with id: {}", id);
     logger.debug("Received delete request for patient id: {}", id);
     try {
@@ -211,9 +218,7 @@ public class PatientController {
       logger.info("Successfully deleted patient with id: {}", id);
       logger.debug("Successfully deleted patient with id: {}", id);
       return ResponseEntity.noContent().build();
-    } catch (RuntimeException e) { // Assuming a generic RuntimeException for now, should be more
-      // specific later if
-      // needed
+    } catch (RuntimeException e) {
       logger.warn("Patient not found for deletion with id: {}", id);
       return ResponseEntity.notFound().build();
     }
@@ -221,7 +226,8 @@ public class PatientController {
 
   @Operation(
       summary = "Validate patient login",
-      description = "Validates login credentials and returns patient info if successful.",
+      description =
+          "Validates login credentials and returns patient info and JWT token if successful.",
       requestBody =
           @io.swagger.v3.oas.annotations.parameters.RequestBody(
               required = true,
@@ -231,25 +237,31 @@ public class PatientController {
         @ApiResponse(
             responseCode = "200",
             description = "Login successful",
-            content = @Content(schema = @Schema(implementation = Patient.class))),
+            content = @Content(schema = @Schema(implementation = LoginResponse.class))),
         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
       })
   @PostMapping("/login")
-  public ResponseEntity<Patient> login(
+  public ResponseEntity<LoginResponse> login(
       @Valid @org.springframework.web.bind.annotation.RequestBody LoginRequest loginRequest) {
+    logger.info("Received request: Login for phone number: {}", loginRequest.getPhoneNumber());
     Patient patient =
         patientService.validateLogin(loginRequest.getPhoneNumber(), loginRequest.getPassword());
     if (patient == null) {
       logger.warn("Login failed for phone number: {}", loginRequest.getPhoneNumber());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    return ResponseEntity.ok(patient);
+    logger.info("Login successful for phone number: {}", loginRequest.getPhoneNumber());
+    String token = tokenProvider.createAccessToken(String.valueOf(patient.getId()));
+    LoginResponse loginResponse = new LoginResponse(patient, token);
+    return ResponseEntity.ok(loginResponse);
   }
 
   @PostMapping("/{id}/password")
   public ResponseEntity<String> updatePassword(
       @PathVariable Long id, @RequestBody UpdatePasswordRequest request) {
+    logger.info("Received request: Update password for patient id: {}", id);
     patientService.updatePassword(id, request.getNewPassword());
+    logger.info("Password updated successfully for patient id: {}", id);
     return ResponseEntity.ok("Password updated successfully.");
   }
 }
