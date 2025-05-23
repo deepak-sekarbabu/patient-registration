@@ -8,7 +8,8 @@
       "mainClass": "com.deepak.registration.RegistrationApplication",
       "projectName": "registration",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": "-Xmx256m -Xms128m"
     }
   ]
 }
