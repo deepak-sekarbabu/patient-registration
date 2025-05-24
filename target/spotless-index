@@ -1,11 +1,12 @@
 RwzRBEgKtp+/S5iVNmQAHjzU1f1qID6b1gw86CtpRBI=
-src\main\java\com\deepak\registration\config\CorsFilter.java 2025-05-23T07:26:39.255595700Z
 src\main\java\com\deepak\registration\config\JacksonConfig.java 2025-05-21T17:06:07.198168500Z
 src\main\java\com\deepak\registration\config\OpenApiConfig.java 2025-05-21T17:06:07.199884400Z
-src\main\java\com\deepak\registration\config\SecurityConfig.java 2025-05-23T07:26:39.304513100Z
+src\main\java\com\deepak\registration\config\RedisConfig.java 2025-05-23T21:42:27.580592400Z
+src\main\java\com\deepak\registration\config\SecurityConfig.java 2025-05-24T15:39:08.015903300Z
 src\main\java\com\deepak\registration\config\SwaggerInitializer.java 2025-05-23T15:39:11.365645400Z
 src\main\java\com\deepak\registration\config\WebConfig.java 2025-05-23T07:26:39.336131700Z
-src\main\java\com\deepak\registration\controller\PatientController.java 2025-05-23T16:21:56.030348300Z
+src\main\java\com\deepak\registration\controller\PatientController.java 2025-05-24T15:39:08.499679800Z
+src\main\java\com\deepak\registration\controller\SessionController.java 2025-05-24T15:39:08.663900400Z
 src\main\java\com\deepak\registration\exception\GlobalExceptionHandler.java 2025-05-22T18:25:03.522397400Z
 src\main\java\com\deepak\registration\model\patient\Address.java 2025-05-21T17:06:07.208741400Z
 src\main\java\com\deepak\registration\model\patient\ClinicPreferences.java 2025-05-21T17:06:07.209830600Z
@@ -19,12 +20,18 @@ src\main\java\com\deepak\registration\model\patient\EmergencyContact.java 2025-0
 src\main\java\com\deepak\registration\model\patient\FamilyHistory.java 2025-05-21T17:06:07.214901300Z
 src\main\java\com\deepak\registration\model\patient\InsuranceDetails.java 2025-05-21T17:06:07.214901300Z
 src\main\java\com\deepak\registration\model\patient\LoginRequest.java 2025-05-23T07:26:39.506223800Z
+src\main\java\com\deepak\registration\model\patient\LoginResponse.java 2025-05-23T23:27:24.219730Z
 src\main\java\com\deepak\registration\model\patient\MedicalInfo.java 2025-05-21T17:06:07.214901300Z
-src\main\java\com\deepak\registration\model\patient\Patient.java 2025-05-23T07:26:39.556919Z
+src\main\java\com\deepak\registration\model\patient\Patient.java 2025-05-23T20:16:54.067237500Z
 src\main\java\com\deepak\registration\model\patient\PersonalDetails.java 2025-05-21T17:41:22.784016400Z
+src\main\java\com\deepak\registration\model\patient\UpdatePasswordRequest.java 2025-05-23T20:16:54.090131Z
 src\main\java\com\deepak\registration\RegistrationApplication.java 2025-05-21T17:06:07.190381100Z
 src\main\java\com\deepak\registration\repository\PatientRepository.java 2025-05-23T15:39:11.417249500Z
-src\main\java\com\deepak\registration\service\PatientService.java 2025-05-23T07:26:39.617386400Z
+src\main\java\com\deepak\registration\security\CustomUserDetailsService.java 2025-05-23T23:27:24.313450600Z
+src\main\java\com\deepak\registration\security\JwtAuthenticationFilter.java 2025-05-23T21:22:46.641629100Z
+src\main\java\com\deepak\registration\security\TokenProvider.java 2025-05-23T23:27:24.651542700Z
+src\main\java\com\deepak\registration\service\PatientService.java 2025-05-23T20:17:32.939086400Z
+src\main\java\com\deepak\registration\service\SessionService.java 2025-05-23T21:22:46.938640800Z
 src\main\java\com\deepak\registration\validation\AllowedCommunicationMethods.java 2025-05-21T17:06:07.248019200Z
 src\main\java\com\deepak\registration\validation\AllowedCommunicationMethodsValidator.java 2025-05-21T17:06:07.248019200Z
 src\test\java\com\deepak\registration\controller\PatientControllerTest.java 2025-05-22T18:25:03.714327100Z

@@ -4,6 +4,10 @@ import com.deepak.registration.model.patient.Patient;
 import com.deepak.registration.security.TokenProvider;
 import com.deepak.registration.service.PatientService;
 import com.deepak.registration.service.SessionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -14,7 +18,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/api/auth")
@@ -25,6 +32,19 @@ public class SessionController {
   private final PatientService patientService;
   private final TokenProvider tokenProvider;
 
+  @Operation(
+      summary = "Validate session",
+      description = "Validates the current user session and returns patient info if valid.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Session is valid",
+            content = @Content(schema = @Schema(implementation = Patient.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Session is invalid or expired",
+            content = @Content)
+      })
   @GetMapping("/validate")
   public ResponseEntity<?> validateSession(HttpServletRequest request) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -53,6 +73,19 @@ public class SessionController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(
+      summary = "Refresh authentication token",
+      description = "Refreshes the authentication tokens using the refresh token in cookies.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Token refreshed successfully",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(
+            responseCode = "401",
+            description = "No refresh token found or invalid session",
+            content = @Content)
+      })
   @PostMapping("/refresh")
   public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
     String refreshToken = tokenProvider.extractRefreshTokenFromCookies(request);
@@ -88,6 +121,15 @@ public class SessionController {
     }
   }
 
+  @Operation(
+      summary = "Logout user",
+      description = "Logs out the user by blacklisting the refresh token and clearing cookies.",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Logged out successfully",
+            content = @Content(schema = @Schema(implementation = String.class)))
+      })
   @PostMapping("/logout")
   public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
     String refreshToken = tokenProvider.extractRefreshTokenFromCookies(request);

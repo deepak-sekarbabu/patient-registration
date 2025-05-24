@@ -256,6 +256,28 @@ public class PatientController {
     return ResponseEntity.ok(loginResponse);
   }
 
+  @Operation(
+      summary = "Change patient password",
+      description = "Updates the password for a patient with the given id.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              required = true,
+              description = "New password request",
+              content = @Content(schema = @Schema(implementation = UpdatePasswordRequest.class))),
+      parameters =
+          @io.swagger.v3.oas.annotations.Parameter(
+              name = "id",
+              description = "ID of the patient whose password is to be updated",
+              required = true,
+              example = "1"),
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Password updated successfully.",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
+      })
   @PostMapping("/{id}/password")
   public ResponseEntity<String> updatePassword(
       @PathVariable Long id, @RequestBody UpdatePasswordRequest request) {

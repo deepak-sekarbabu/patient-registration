@@ -54,7 +54,12 @@ public class SecurityConfig {
                     .requestMatchers("/v1/api/auth/logout")
                     .permitAll()
                     .requestMatchers(
-                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/index.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated());
