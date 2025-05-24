@@ -39,6 +39,9 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/api/patients")
+                    .permitAll() // Allow
+                    // registration
                     .requestMatchers("/v1/api/patients/login")
                     .permitAll()
                     .requestMatchers("/v1/api/patients/")

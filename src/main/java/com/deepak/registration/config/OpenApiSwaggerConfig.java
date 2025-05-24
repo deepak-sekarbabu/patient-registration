@@ -5,11 +5,13 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 
 @Configuration
-public class OpenApiConfig {
+public class OpenApiSwaggerConfig {
   @Bean
   public OpenAPI customOpenAPI() {
     return new OpenAPI()
@@ -24,5 +26,14 @@ public class OpenApiConfig {
             new ExternalDocumentation()
                 .description("Project Wiki")
                 .url("https://github.com/your-org/registration/wiki"));
+  }
+
+  @EventListener(ApplicationReadyEvent.class)
+  public void init(ApplicationReadyEvent event) {
+    // Fetch OpenAPI bean from the application context
+    OpenAPI openAPI = event.getApplicationContext().getBean(OpenAPI.class);
+    // Force initialization of the OpenAPI documentation at startup.
+    openAPI.hashCode();
+    System.out.println("Swagger API documentation initialized on startup.");
   }
 }
