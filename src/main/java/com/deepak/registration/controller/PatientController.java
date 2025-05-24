@@ -59,6 +59,9 @@ public class PatientController {
       @org.springframework.web.bind.annotation.RequestBody Patient patient) {
     logger.info("Received request: Create new patient");
     logger.info("Creating new patient with phone number: {}", patient.getPhoneNumber());
+    if (patient.getUpdatedAt() == null) {
+      patient.setUpdatedAt(java.time.LocalDateTime.now());
+    }
     Patient savedPatient = patientService.createPatient(patient);
     logger.info("Successfully created patient with id: {}", savedPatient.getId());
     return ResponseEntity.ok(savedPatient);

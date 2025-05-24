@@ -87,4 +87,34 @@ public class Patient {
   public void setUsingDefaultPassword(boolean usingDefaultPassword) {
     this.usingDefaultPassword = usingDefaultPassword;
   }
+
+  public static class PatientBuilder {
+    private Long id;
+    private String phoneNumber;
+    private PersonalDetails personalDetails;
+    private MedicalInfo medicalInfo;
+    private EmergencyContact emergencyContact;
+    private InsuranceDetails insuranceDetails;
+    private ClinicPreferences clinicPreferences;
+    private String passwordHash;
+    private LocalDateTime updatedAt;
+    private boolean usingDefaultPassword = true;
+
+    public Patient build() {
+      if (this.updatedAt == null) {
+        this.updatedAt = java.time.LocalDateTime.now();
+      }
+      return new Patient(
+          id,
+          phoneNumber,
+          personalDetails,
+          medicalInfo,
+          emergencyContact,
+          insuranceDetails,
+          clinicPreferences,
+          passwordHash,
+          updatedAt,
+          usingDefaultPassword);
+    }
+  }
 }
