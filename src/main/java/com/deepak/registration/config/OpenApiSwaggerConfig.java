@@ -5,6 +5,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,8 @@ import org.springframework.context.event.EventListener;
 
 @Configuration
 public class OpenApiSwaggerConfig {
+  private static final Logger logger = LoggerFactory.getLogger(OpenApiSwaggerConfig.class);
+
   @Bean
   public OpenAPI customOpenAPI() {
     return new OpenAPI()
@@ -34,6 +38,6 @@ public class OpenApiSwaggerConfig {
     OpenAPI openAPI = event.getApplicationContext().getBean(OpenAPI.class);
     // Force initialization of the OpenAPI documentation at startup.
     openAPI.hashCode();
-    System.out.println("Swagger API documentation initialized on startup.");
+    logger.info("Swagger API documentation initialized on startup.");
   }
 }
