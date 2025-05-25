@@ -1,30 +1,33 @@
 # Patient Registration
 
-## Description
-
-A simple Patient Registration system built with Spring Boot. It allows for the registration and management of patient records.
+A modern, secure, and high-performance Patient Registration system built with Spring Boot 3.5+, Java 21, and MySQL. It supports robust patient management, JWT-based authentication, Redis caching, and comprehensive API documentation via Swagger/OpenAPI.
 
 ## Features
 
-- Register new patients
-- View patient details
-- Search for patients
-- Update patient information
-- Delete patient records
+- Register, view, search, update, and delete patient records
 - JWT-based authentication and authorization
 - Redis integration for caching
 - MySQL database support
 - OpenAPI (Swagger) documentation
+- Global exception handling
+- Input validation with annotations
+- Layered architecture (Controller → Service → Repository)
+- Performance optimizations (caching, async processing)
+- Unit and integration tests with JUnit 5 & Mockito
 
 ## Technologies Used
 
 - Java 21+
 - Spring Boot 3.5+
+- Spring Data JPA (Hibernate)
 - Maven
-- MySQL Database
+- MySQL
 - Redis
 - JWT (JSON Web Token)
-- Swagger (OpenAPI) for API documentation
+- Swagger/OpenAPI
+- Lombok
+- Flyway (for DB migrations)
+- JUnit 5, Mockito
 
 ## Getting Started
 
@@ -51,13 +54,16 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-### Database & Redis Configuration
+### Database, Redis & JWT Configuration
 
-Update the `src/main/resources/application.properties` file with your MySQL and Redis credentials and database details as needed.
+Update `src/main/resources/application.properties` with your credentials:
 
-- MySQL: Set `spring.datasource.url`, `spring.datasource.username`, and `spring.datasource.password`.
-- Redis: Set `spring.data.redis.host`, `spring.data.redis.port`, and `spring.data.redis.password`.
-- JWT: Set a strong `app.jwt.secret` (256 characters recommended).
+- **MySQL:**
+  - `spring.datasource.url`, `spring.datasource.username`, `spring.datasource.password`
+- **Redis:**
+  - `spring.data.redis.host`, `spring.data.redis.port`, `spring.data.redis.password`
+- **JWT:**
+  - `app.jwt.secret` (256+ chars recommended)
 
 ### Running Tests
 
@@ -67,13 +73,30 @@ To run all tests:
 mvn test
 ```
 
-## Swagger API Documentation
+## API Documentation
 
-Once the application is running, you can access the Swagger UI for API documentation and testing at:
+Once running, access Swagger UI at:
 
 - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - or [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
 
 ## Usage
 
-Use the Swagger UI to explore and test the available API endpoints for patient registration and management.
+Use Swagger UI to explore and test all API endpoints for patient registration and management.
+
+---
+
+## Project Structure & Best Practices
+
+- **Layered architecture:** Controller → Service → Repository
+- **Validation:** Use `@Valid`, `@NotBlank`, `@Size`, etc. for input validation
+- **Exception Handling:** Centralized with `@ControllerAdvice`
+- **Caching:** Use `@Cacheable` for frequently accessed reads
+- **Async:** Use `@Async` for long-running tasks
+- **Testing:** High coverage with unit/integration tests
+- **Code Quality:** Follows Google Java Style, uses Spotless/Checkstyle
+- **Documentation:** JavaDoc for public classes/methods, Swagger annotations for APIs
+
+---
+
+

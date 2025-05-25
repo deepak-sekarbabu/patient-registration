@@ -2,15 +2,14 @@
 
 ## 🧠 Developer Context
 
-You are working on a **Java 21+** Spring Boot application that uses:
+You are working on a **Java 21+** Spring Boot application with:
 
-- Spring Boot 3.4 +
-- MySQL as the relational database
-- Spring Data JPA with Hibernate
-- Maven for build and dependency management
+- Spring Boot 3.5+
+- MySQL (via Spring Data JPA/Hibernate)
+- Maven for build/dependency management
 - Layered architecture: Controller → Service → Repository
 - RESTful API design with Models and validation
-- Performance optimizations like caching and async processing
+- Performance optimizations: caching (Redis), async processing
 - Clean, maintainable, and testable code using modern Java features
 
 ---
@@ -19,13 +18,13 @@ You are working on a **Java 21+** Spring Boot application that uses:
 
 ### Java & Spring Boot
 
-- Use **Java 21 features** such as records and pattern matching where appropriate
-- Use **Spring Boot annotations** like `@RestController`, `@Service`, `@Repository`, `@Entity`
+- Use **Java 21 features** (records, pattern matching, etc.)
+- Use **Spring Boot annotations**: `@RestController`, `@Service`, `@Repository`, `@Entity`
 - Prefer **constructor injection** with `@RequiredArgsConstructor` (Lombok)
 - Use **JPA annotations** for entity mapping
-- Use **Models** for persistence and API layers
-- Implement **global exception handling** using `@ControllerAdvice`
-- Add **input validation** using `@Valid`, `@NotBlank`, `@Size`, etc.
+- Use **DTOs/Models** for persistence and API layers
+- Implement **global exception handling** with `@ControllerAdvice`
+- Add **input validation**: `@Valid`, `@NotBlank`, `@Size`, etc.
 
 ---
 
@@ -33,32 +32,33 @@ You are working on a **Java 21+** Spring Boot application that uses:
 
 - Use Spring Data JPA repositories
 - Use `@GeneratedValue(strategy = GenerationType.IDENTITY)` for auto-increment primary keys
-- Apply indexing and constraints via JPA annotations
-- Support schema evolution via **Flyway** (or Liquibase)
+- Apply indexing/constraints via JPA annotations
+- Support schema evolution via **Flyway**
 
 ---
 
 ### REST API Best Practices
 
-- Structure endpoints using REST conventions: `/api/v1/users`, `/api/v1/products`, etc.
-- Use `ResponseEntity<T>` for response wrapping
+- Structure endpoints as `/api/v1/patients`, etc.
+- Use `ResponseEntity<T>` for responses
 - Return proper HTTP status codes: `200 OK`, `201 Created`, `404 Not Found`, etc.
-- Use `@Valid` in request bodies for input validation
+- Use `@Valid` in request bodies for validation
+- Document endpoints with Swagger/OpenAPI annotations
 
 ---
 
 ### Performance & Optimization
 
-- Use `@Cacheable` for frequently accessed reads (with Caffeine/Redis)
-- Use `@Async` for long-running background tasks
-- Index important fields in the database using `@Column(unique = true)` or `@Index`
+- Use `@Cacheable` for frequently accessed reads (Redis)
+- Use `@Async` for long-running tasks
+- Index important fields in the database
 
 ---
 
 ### Testing
 
-- Write unit and integration tests for all business logic and API endpoints
-- Use **JUnit 5** and **Mockito** for testing
+- Write unit/integration tests for all business logic and API endpoints
+- Use **JUnit 5** and **Mockito**
 - Use **@SpringBootTest** for integration tests
 - Ensure high code coverage and meaningful assertions
 - Mock external dependencies in unit tests
@@ -67,17 +67,26 @@ You are working on a **Java 21+** Spring Boot application that uses:
 
 ### Code Formatting & Quality
 
-- Follow standard Java formatting conventions (Google Java Style or similar)
-- Use tools like **Checkstyle**, **Spotless**, or **EditorConfig** for consistent formatting
-- Use meaningful variable, method, and class names
+- Follow Google Java Style (or similar)
+- Use **Checkstyle**, **Spotless**, or **EditorConfig**
+- Use meaningful names
 - Keep methods short and focused
-- Avoid code duplication and follow DRY principles
+- Avoid code duplication (DRY)
 
 ---
 
 ### Documentation
 
-- Use **JavaDoc** for public classes and methods
-- Document API endpoints using **Swagger/OpenAPI** annotations
-- Maintain a **README.md** file with project setup, build, and run instructions
+- Use **JavaDoc** for public classes/methods
+- Document API endpoints with **Swagger/OpenAPI**
+- Maintain a **README.md** with setup, build, and run instructions
 - Use **Markdown** for documentation
+
+---
+
+## Additional Notes
+
+- Use Lombok to reduce boilerplate
+- Use Flyway for DB migrations
+- Ensure security best practices for JWT and sensitive data
+- Keep dependencies up to date
