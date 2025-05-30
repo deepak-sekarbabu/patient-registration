@@ -52,4 +52,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     filterChain.doFilter(request, response);
   }
+
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    String path = request.getRequestURI();
+    // List all public endpoints that should skip JWT authentication
+    return path.equals("/v1/api/auth/validate")
+        || path.equals("/v1/api/auth/refresh")
+        || path.equals("/v1/api/auth/logout")
+        || path.equals("/v1/api/patients/login")
+        || path.equals("/v1/api/patients/register")
+        || path.equals("/v1/api/patients/exists-by-phone")
+        || (path.equals("/v1/api/patients") && request.getMethod().equals("POST"))
+        || (path.matches("/v1/api/patients/\\d+/password") && request.getMethod().equals("POST"))
+        || (path.matches("/v1/api/patients/\\d+") && request.getMethod().equals("PUT"))
+        || path.startsWith("/swagger-ui")
+        || path.startsWith("/v3/api-docs")
+        || path.startsWith("/swagger-resources")
+        || path.startsWith("/webjars");
+  }
 }
