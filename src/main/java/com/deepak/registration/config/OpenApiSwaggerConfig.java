@@ -1,10 +1,14 @@
 package com.deepak.registration.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -29,7 +33,16 @@ public class OpenApiSwaggerConfig {
         .externalDocs(
             new ExternalDocumentation()
                 .description("Project Wiki")
-                .url("https://github.com/your-org/registration/wiki"));
+                .url("https://github.com/deepak-sekarbabu/patient-registration"))
+        .components(
+            new Components()
+                .addSecuritySchemes(
+                    "bearer-key",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")))
+        .security(Collections.singletonList(new SecurityRequirement().addList("bearer-key")));
   }
 
   @EventListener(ApplicationReadyEvent.class)

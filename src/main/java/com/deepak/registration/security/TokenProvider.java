@@ -1,6 +1,11 @@
 package com.deepak.registration.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -146,12 +151,33 @@ public class TokenProvider {
         .build();
   }
 
-  /** Extract access token from cookies */
+  /** Extract token from header or cookies */
+  public String extractAccessToken(HttpServletRequest request) {
+    // First try to get token from header
+    String headerToken = extractTokenFromHeader(request);
+    if (headerToken != null) {
+      return headerToken;
+    }
+
+    // If not in header, try to get from cookies
+    return extractAccessTokenFromCookies(request);
+  }
+
+  /** Extract token from header */
+  private String extractTokenFromHeader(HttpServletRequest request) {
+    String bearerToken = request.getHeader("Authorization");
+    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+      return bearerToken.substring(7);
+    }
+    return null;
+  }
+
+  /** Extract token from cookie */
   public String extractAccessTokenFromCookies(HttpServletRequest request) {
     return extractCookieValue(request, ACCESS_TOKEN_COOKIE_NAME).orElse(null);
   }
 
-  /** Extract refresh token from cookies */
+  /** Extracts refresh token from cookies */
   public String extractRefreshTokenFromCookies(HttpServletRequest request) {
     return extractCookieValue(request, REFRESH_TOKEN_COOKIE_NAME).orElse(null);
   }
@@ -159,7 +185,6 @@ public class TokenProvider {
   /** Helper method to extract cookie value */
   private Optional<String> extractCookieValue(HttpServletRequest request, String cookieName) {
     Cookie[] cookies = request.getCookies();
-
     if (cookies != null) {
       for (Cookie cookie : cookies) {
         if (cookieName.equals(cookie.getName())) {
@@ -167,7 +192,6 @@ public class TokenProvider {
         }
       }
     }
-
     return Optional.empty();
   }
 }

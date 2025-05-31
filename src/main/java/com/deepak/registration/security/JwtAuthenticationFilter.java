@@ -27,8 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     try {
-      // Extract token from cookie
-      String accessToken = tokenProvider.extractAccessTokenFromCookies(request);
+      // Extract token from either header or cookies
+      String accessToken = tokenProvider.extractAccessToken(request);
 
       if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
         String userId = tokenProvider.getUserIdFromToken(accessToken);
