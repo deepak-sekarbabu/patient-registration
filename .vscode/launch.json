@@ -2,14 +2,14 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Spring Boot-RegistrationApplication<registration>",
+      "name": "Spring Boot - RegistrationApplication <registration>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "mainClass": "com.deepak.registration.RegistrationApplication",
       "projectName": "registration",
       "args": "",
       "envFile": "${workspaceFolder}/.env",
-      "vmArgs": "-Xmx256m -Xms128m"
+      "vmArgs": "-Xms256m -Xmx400m -XX:+UseG1GC -Dspring.profiles.active=local"
     }
   ]
 }

@@ -228,7 +228,7 @@ public class PatientController {
   }
 
   @Operation(
-      summary = "Validate patient login",
+      summary = "Patinet Login",
       description =
           "Validates login credentials and returns patient info and JWT token if successful.",
       requestBody =
