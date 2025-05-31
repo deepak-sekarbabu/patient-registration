@@ -1,16 +1,16 @@
 package com.deepak.registration.service;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class SessionService {
 
-  private final RedisTemplate<String, String> redisTemplate;
+  private final ConcurrentHashMap<String, SessionData> sessionMap = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, Long> refreshTokenBlacklist = new ConcurrentHashMap<>();
 
   @Value("${app.jwt.refresh-token-expiration-ms}")
   private long refreshTokenExpirationMs;
@@ -21,14 +21,13 @@ public class SessionService {
    * @param token The refresh token to blacklist
    */
   public void blacklistRefreshToken(String token) {
-    // Store token in Redis blacklist
-    // Key format: "blacklisted_refresh_token:{token}"
-    String key = "blacklisted_refresh_token:" + token;
+    // Store token with expiration time
+    refreshTokenBlacklist.put(token, System.currentTimeMillis() + refreshTokenExpirationMs);
 
-    // Store with an expiration time matching the original token expiration
-    redisTemplate
-        .opsForValue()
-        .set(key, "blacklisted", refreshTokenExpirationMs, TimeUnit.MILLISECONDS);
+    // Clean up expired tokens
+    refreshTokenBlacklist
+        .entrySet()
+        .removeIf(entry -> entry.getValue() < System.currentTimeMillis());
   }
 
   /**
@@ -38,8 +37,16 @@ public class SessionService {
    * @return true if blacklisted, false otherwise
    */
   public boolean isRefreshTokenBlacklisted(String token) {
-    String key = "blacklisted_refresh_token:" + token;
-    return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    Long expiryTime = refreshTokenBlacklist.get(token);
+    if (expiryTime == null) {
+      return false;
+    }
+    if (expiryTime < System.currentTimeMillis()) {
+      // Token expired, remove it
+      refreshTokenBlacklist.remove(token);
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -50,19 +57,26 @@ public class SessionService {
    * @param expiryTimeMs Expiry time in milliseconds
    */
   public void storeSessionData(String userId, String sessionData, long expiryTimeMs) {
-    String key = "user_session:" + userId;
-    redisTemplate.opsForValue().set(key, sessionData, expiryTimeMs, TimeUnit.MILLISECONDS);
+    sessionMap.put(userId, new SessionData(sessionData, System.currentTimeMillis() + expiryTimeMs));
+
+    // Clean up expired sessions
+    sessionMap
+        .entrySet()
+        .removeIf(entry -> entry.getValue().getExpiryTime() < System.currentTimeMillis());
   }
 
   /**
    * Get user's session data
    *
    * @param userId The user ID
-   * @return The session data or null if not found
+   * @return The session data or null if not found or expired
    */
   public String getSessionData(String userId) {
-    String key = "user_session:" + userId;
-    return redisTemplate.opsForValue().get(key);
+    SessionData sessionData = sessionMap.get(userId);
+    if (sessionData == null || sessionData.getExpiryTime() < System.currentTimeMillis()) {
+      return null;
+    }
+    return sessionData.getSessionData();
   }
 
   /**
@@ -71,7 +85,24 @@ public class SessionService {
    * @param userId The user ID
    */
   public void invalidateSession(String userId) {
-    String key = "user_session:" + userId;
-    redisTemplate.delete(key);
+    sessionMap.remove(userId);
+  }
+
+  private static class SessionData {
+    private final String sessionData;
+    private final long expiryTime;
+
+    public SessionData(String sessionData, long expiryTime) {
+      this.sessionData = sessionData;
+      this.expiryTime = expiryTime;
+    }
+
+    public String getSessionData() {
+      return sessionData;
+    }
+
+    public long getExpiryTime() {
+      return expiryTime;
+    }
   }
 }

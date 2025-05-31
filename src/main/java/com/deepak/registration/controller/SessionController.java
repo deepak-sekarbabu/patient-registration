@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,10 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,46 +36,89 @@ public class SessionController {
   private final TokenProvider tokenProvider;
 
   @Operation(
-      summary = "Validate session",
-      description = "Validates the current user session and returns patient info if valid.",
+      summary = "Validate JWT token",
+      description =
+          "Validates a JWT token and returns patient info if valid. The token should be passed in the request body.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              required = true,
+              content =
+                  @Content(
+                      mediaType = "application/json",
+                      schema =
+                          @Schema(
+                              type = "object",
+                              example = "{\"token\": \"your-jwt-token-here\"}",
+                              description = "Request body containing the JWT token to validate"))),
       responses = {
         @ApiResponse(
             responseCode = "200",
-            description = "Session is valid",
-            content = @Content(schema = @Schema(implementation = Patient.class))),
+            description = "Token is valid",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema =
+                        @Schema(
+                            type = "object",
+                            example = "{\"valid\": true, \"patient\": { ... }}",
+                            description = "Response when token is valid"))),
         @ApiResponse(
             responseCode = "401",
-            description = "Session is invalid or expired",
-            content = @Content)
+            description = "Token is invalid or expired",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema =
+                        @Schema(
+                            type = "object",
+                            example =
+                                "{\"valid\": false, \"message\": \"Invalid or expired token\"}",
+                            description = "Response when token is invalid or expired"))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "No token provided",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema =
+                        @Schema(
+                            type = "object",
+                            example = "{\"valid\": false, \"message\": \"No token provided\"}",
+                            description = "Response when no token is provided")))
       })
-  @GetMapping("/validate")
-  public ResponseEntity<?> validateSession(HttpServletRequest request) {
-    logger.info("Validating session for request: {}", request.getRequestURI());
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  @PostMapping("/validate")
+  public ResponseEntity<?> validateToken(@RequestBody Map<String, String> tokenRequest) {
+    try {
+      String token = tokenRequest.get("token");
+      if (token == null) {
+        return ResponseEntity.badRequest()
+            .body(Map.of("valid", false, "message", "No token provided"));
+      }
 
-    // Check if the user is authenticated
-    if (authentication == null
-        || !authentication.isAuthenticated()
-        || "anonymousUser".equals(authentication.getPrincipal())) {
-      logger.warn("Session invalid or expired. Authentication: {}", authentication);
-      Map<String, Object> response = new HashMap<>();
-      response.put("valid", false);
-      response.put("message", "Session is invalid or expired");
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+      if (!tokenProvider.validateAccessToken(token)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("valid", false, "message", "Invalid or expired token"));
+      }
+
+      String userId = tokenProvider.getUserIdFromToken(token);
+      Long patientId = Long.parseLong(userId);
+      Patient patient = patientService.getPatientById(patientId);
+
+      if (patient == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("valid", false, "message", "Patient not found"));
+      }
+
+      return ResponseEntity.ok(Map.of("valid", true, "patient", patient));
+    } catch (NumberFormatException e) {
+      logger.error("Invalid user ID format in token: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("valid", false, "message", "Invalid user ID format"));
+    } catch (Exception e) {
+      logger.error("Token validation error: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("valid", false, "message", "Token validation failed: " + e.getMessage()));
     }
-
-    // Get user ID from authentication
-    String userId = authentication.getName();
-    logger.info("Session valid for userId: {}", userId);
-    Long id = Long.parseLong(userId);
-    Patient patient = patientService.getPatientById(id);
-
-    Map<String, Object> response = new HashMap<>();
-    response.put("valid", true);
-    response.put("patient", patient);
-
-    // No need to send the actual token since we're using HttpOnly cookies
-    return ResponseEntity.ok(response);
   }
 
   @Operation(
