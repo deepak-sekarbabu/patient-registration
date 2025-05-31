@@ -33,16 +33,16 @@ A modern, secure, and high-performance Patient Registration system built with Sp
 
 The primary entity in this application is `Patient`. The `patients` table stores patient registration information. Key fields include:
 
-*   `id` (BIGINT, Primary Key, Auto-incremented): Unique identifier for the patient.
-*   `phone_number` (VARCHAR, Unique): Patient's 10-digit phone number, also used for login.
-*   `password_hash` (VARCHAR): Hashed password for the patient.
-*   `using_default_password` (BOOLEAN): Flag indicating if the patient is currently using the default password (which is their phone number).
-*   `personal_details` (JSON): Stores personal information like name, date of birth, gender, address.
-*   `medical_info` (JSON): Stores medical history, allergies, current medications.
-*   `emergency_contact` (JSON): Stores emergency contact details.
-*   `insurance_details` (JSON): Stores insurance provider information.
-*   `clinic_preferences` (JSON): Stores communication preferences and preferred clinic location.
-*   `updated_at` (TIMESTAMP): Timestamp of the last update to the patient record.
+- `id` (BIGINT, Primary Key, Auto-incremented): Unique identifier for the patient.
+- `phone_number` (VARCHAR, Unique): Patient's 10-digit phone number, also used for login.
+- `password_hash` (VARCHAR): Hashed password for the patient.
+- `using_default_password` (BOOLEAN): Flag indicating if the patient is currently using the default password (which is their phone number).
+- `personal_details` (JSON): Stores personal information like name, date of birth, gender, address.
+- `medical_info` (JSON): Stores medical history, allergies, current medications.
+- `emergency_contact` (JSON): Stores emergency contact details.
+- `insurance_details` (JSON): Stores insurance provider information.
+- `clinic_preferences` (JSON): Stores communication preferences and preferred clinic location.
+- `updated_at` (TIMESTAMP): Timestamp of the last update to the patient record.
 
 The JSON fields are mapped to corresponding Java classes (`PersonalDetails`, `MedicalInfo`, etc.) within the application using JPA converters.
 
@@ -80,10 +80,10 @@ To deploy the application:
     mvn clean package
     ```
 2.  Run the JAR file:
-    ```bash
-    java -jar target/registration-0.0.1-SNAPSHOT.jar
-    ```
-Ensure that your MySQL and Redis instances are running and accessible by the application. You might need to configure environment variables for database credentials, Redis connection, and JWT secret for a production environment instead of using the `application.properties` file directly.
+    `bash
+java -jar target/registration-0.0.1-SNAPSHOT.jar
+`
+    Ensure that your MySQL and Redis instances are running and accessible by the application. You might need to configure environment variables for database credentials, Redis connection, and JWT secret for a production environment instead of using the `application.properties` file directly.
 
 ### Database, Redis & JWT Configuration
 
@@ -96,7 +96,7 @@ Update `src/main/resources/application.properties` with your credentials:
 - **JWT:**
   - `app.jwt.secret` (256+ chars recommended)
 
-### Running Tests
+## Running Tests
 
 To run all tests:
 
@@ -111,6 +111,8 @@ Once running, access Swagger UI at:
 - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - or [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
 
+You can find the OpenAPI specification in the [`swagger.yaml`](swagger.yaml) file at the project root.
+
 ## Usage
 
 Use Swagger UI to explore and test all API endpoints for patient registration and management.
@@ -119,14 +121,14 @@ Use Swagger UI to explore and test all API endpoints for patient registration an
 
 This application incorporates several security best practices:
 
-*   **JWT-Based Authentication:** Secure stateless authentication using JSON Web Tokens. Ensure your `app.jwt.secret` is strong and kept confidential.
-*   **HTTPS:** While not enforced by the application itself, it is strongly recommended to run the application behind a reverse proxy (e.g., Nginx, Apache) configured with SSL/TLS to ensure all communication is encrypted.
-*   **Password Hashing:** Passwords are securely hashed using BCrypt before being stored in the database.
-*   **Input Validation:** Spring Validation annotations (`@Valid`, `@NotBlank`, etc.) are used to validate incoming request data, preventing common injection flaws at the model level.
-*   **Global Exception Handling:** Centralized exception handling helps prevent exposing sensitive stack traces to the client.
-*   **CSRF Protection:** For web applications that use sessions and cookies for authentication, Spring Security provides CSRF protection by default. Since this application primarily uses JWT for API authentication (often via Authorization header), traditional CSRF might be less of a concern for API endpoints if cookies are not the primary method for session tracking. However, if cookies are used for authentication (e.g. refresh tokens), ensure SameSite cookie attributes are appropriately set (as done for refresh and access tokens in this application - `SameSite=Lax`).
-*   **ORM and Parameterized Queries:** Spring Data JPA (Hibernate) uses parameterized queries by default, which helps protect against SQL injection vulnerabilities.
-*   **Regular Dependency Updates:** Keep dependencies (Spring Boot, Java, Maven plugins, etc.) updated to patch known vulnerabilities.
+- **JWT-Based Authentication:** Secure stateless authentication using JSON Web Tokens. Ensure your `app.jwt.secret` is strong and kept confidential.
+- **HTTPS:** While not enforced by the application itself, it is strongly recommended to run the application behind a reverse proxy (e.g., Nginx, Apache) configured with SSL/TLS to ensure all communication is encrypted.
+- **Password Hashing:** Passwords are securely hashed using BCrypt before being stored in the database.
+- **Input Validation:** Spring Validation annotations (`@Valid`, `@NotBlank`, etc.) are used to validate incoming request data, preventing common injection flaws at the model level.
+- **Global Exception Handling:** Centralized exception handling helps prevent exposing sensitive stack traces to the client.
+- **CSRF Protection:** For web applications that use sessions and cookies for authentication, Spring Security provides CSRF protection by default. Since this application primarily uses JWT for API authentication (often via Authorization header), traditional CSRF might be less of a concern for API endpoints if cookies are not the primary method for session tracking. However, if cookies are used for authentication (e.g. refresh tokens), ensure SameSite cookie attributes are appropriately set (as done for refresh and access tokens in this application - `SameSite=Lax`).
+- **ORM and Parameterized Queries:** Spring Data JPA (Hibernate) uses parameterized queries by default, which helps protect against SQL injection vulnerabilities.
+- **Regular Dependency Updates:** Keep dependencies (Spring Boot, Java, Maven plugins, etc.) updated to patch known vulnerabilities.
 
 ---
 
@@ -135,7 +137,7 @@ This application incorporates several security best practices:
 - **Layered architecture:** Controller → Service → Repository
 - **Validation:** Use `@Valid`, `@NotBlank`, `@Size`, etc. for input validation
 - **Exception Handling:** Centralized with `@ControllerAdvice`
-- **Caching:** Use `@Cacheable` for frequently accessed reads
+- **Caching:** Use `@Cacheable` for frequently accessed reads (Redis)
 - **Async:** Use `@Async` for long-running tasks
 - **Testing:** High coverage with unit/integration tests
 - **Code Quality:** Follows Google Java Style, uses Spotless/Checkstyle

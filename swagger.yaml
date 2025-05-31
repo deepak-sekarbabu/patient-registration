@@ -1,0 +1,576 @@
+---
+openapi: 3.1.0
+info:
+  title: Patient Registration API
+  description: API documentation for Patient Registration Service.
+  contact:
+    name: Deepak Sekarbabu
+    email: deepak.sekarbabu@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://springdoc.org
+  version: 1.0.0
+externalDocs:
+  description: Project Wiki
+  url: https://github.com/deepak-sekarbabu/patient-registration
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+security:
+  - bearer-key: []
+tags:
+  - name: Session Controller
+    description: Operations related to Session Management
+  - name: Patients
+    description: Operations related to patient registration and management
+paths:
+  "/v1/api/patients/{id}":
+    put:
+      tags:
+        - Patients
+      summary: Update patient information
+      description: Updates an existing patient's information in the system.
+      operationId: updatePatient
+      parameters:
+        - name: id
+          in: path
+          description: ID of the patient to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        description: Updated patient object (only include fields to update)
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Patient"
+        required: true
+      responses:
+        "200":
+          description: Patient updated successfully
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Patient"
+        "400":
+          description: Invalid input
+        "404":
+          description: Patient not found
+    delete:
+      tags:
+        - Patients
+      summary: Delete patient by id
+      description: Deletes a patient from the system using the provided id.
+      operationId: deletePatientById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the patient to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "204":
+          description: Patient deleted successfully
+        "404":
+          description: Patient not found
+  "/v1/api/patients":
+    post:
+      tags:
+        - Patients
+      summary: Create a new patient
+      description:
+        Registers a new patient in the system and returns the saved patient
+        details.
+      operationId: createPatient
+      requestBody:
+        description: Patient object to be created
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Patient"
+        required: true
+      responses:
+        "200":
+          description: Patient created successfully
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Patient"
+        "400":
+          description: Invalid input
+  "/v1/api/patients/{id}/password":
+    post:
+      tags:
+        - Patients
+      summary: Change patient password
+      description: Updates the password for a patient with the given id.
+      operationId: updatePassword
+      parameters:
+        - name: id
+          in: path
+          description: ID of the patient whose password is to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        description: New password request
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdatePasswordRequest"
+        required: true
+      responses:
+        "200":
+          description: Password updated successfully.
+          content:
+            "*/*":
+              schema:
+                type: string
+        "400":
+          description: Invalid request
+        "404":
+          description: Patient not found
+  "/v1/api/patients/login":
+    post:
+      tags:
+        - Patients
+      summary: Patinet Login
+      description:
+        Validates login credentials and returns patient info and JWT token
+        if successful.
+      operationId: login
+      requestBody:
+        description: Login request with phone number and password
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: Login successful
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/LoginResponse"
+        "401":
+          description: Unauthorized
+  "/v1/api/auth/validate":
+    post:
+      tags:
+        - Session Controller
+      summary: Validate JWT token
+      description:
+        Validates a JWT token and returns patient info if valid. The token
+        should be passed in the request body.
+      operationId: validateToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Request body containing the JWT token to validate
+              example:
+                token: your-jwt-token-here
+        required: true
+      responses:
+        "200":
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response when token is valid
+                example: '{"valid": true, "patient": { ... }}'
+        "400":
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response when no token is provided
+                example:
+                  valid: false
+                  message: No token provided
+        "401":
+          description: Token is invalid or expired
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response when token is invalid or expired
+                example:
+                  valid: false
+                  message: Invalid or expired token
+  "/v1/api/auth/refresh":
+    post:
+      tags:
+        - Session Controller
+      summary: Refresh authentication token
+      description:
+        Refreshes the authentication tokens using the refresh token in
+        cookies.
+      operationId: refreshToken
+      responses:
+        "200":
+          description: Token refreshed successfully
+          content:
+            "*/*":
+              schema:
+                type: string
+        "401":
+          description: No refresh token found or invalid session
+  "/v1/api/auth/logout":
+    post:
+      tags:
+        - Session Controller
+      summary: Logout user
+      description:
+        Logs out the user by blacklisting the refresh token and clearing
+        cookies.
+      operationId: logout
+      responses:
+        "200":
+          description: Logged out successfully
+          content:
+            "*/*":
+              schema:
+                type: string
+  "/v1/api/patients/exists-by-phone":
+    get:
+      tags:
+        - Patients
+      summary: Check if user exists by phone number
+      description:
+        Returns true if a patient exists with the given phone number, false
+        otherwise.
+      operationId: existsByPhoneNumber
+      parameters:
+        - name: phoneNumber
+          in: query
+          description: Phone number to check existence
+          required: true
+          schema:
+            type: string
+          example: 9876543210
+      responses:
+        "200":
+          description: Existence result
+          content:
+            "*/*":
+              schema:
+                type: boolean
+  "/v1/api/patients/by-phone":
+    get:
+      tags:
+        - Patients
+      summary: Get patient by phone number
+      description: Retrieves patient information using the provided phone number.
+      operationId: getPatientByPhoneNumber
+      parameters:
+        - name: phoneNumber
+          in: query
+          description: Phone number of the patient
+          required: true
+          schema:
+            type: string
+          example: "+919789801844"
+      responses:
+        "200":
+          description: Patient found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Patient"
+        "404":
+          description: Patient not found
+  "/v1/api/patients/by-id":
+    get:
+      tags:
+        - Patients
+      summary: Get patient by id
+      description: Retrieves patient information using the provided id.
+      operationId: getPatientById
+      parameters:
+        - name: id
+          in: query
+          description: ID of the patient
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        "200":
+          description: Patient found
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Patient"
+        "404":
+          description: Patient not found
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street address
+          example: 123
+          maxLength: 100
+          minLength: 2
+        city:
+          type: string
+          description: City name
+          example: Bangalore
+          maxLength: 50
+          minLength: 2
+        state:
+          type: string
+          description: State name
+          example: Karnataka
+          maxLength: 50
+          minLength: 2
+        postalCode:
+          type: string
+          description: Postal code
+          example: 560001
+          maxLength: 10
+          minLength: 4
+        country:
+          type: string
+          description: Country name
+          example: India
+          maxLength: 50
+          minLength: 2
+    ClinicPreferences:
+      type: object
+      properties:
+        preferredLanguage:
+          type: string
+          description: Preferred language for communication
+          example: English
+          maxLength: 30
+          minLength: 2
+        communicationMethod:
+          type: array
+          description: Preferred communication methods
+          example:
+            - Email
+            - SMS
+            - Whatsapp
+          items:
+            type: string
+      required:
+        - communicationMethod
+    EmergencyContact:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the emergency contact
+          example: Priya Sharma
+          maxLength: 50
+          minLength: 2
+        relationship:
+          type: string
+          description: Relationship to the patient
+          example: Spouse
+          maxLength: 30
+          minLength: 2
+        phoneNumber:
+          type: string
+          description: Phone number of the emergency contact
+          example: "+919876543211"
+          pattern: "^\\+91[0-9]{10}$"
+        address:
+          type: string
+          description: Address of the emergency contact
+          example: Same as patient
+          maxLength: 100
+          minLength: 2
+    FamilyHistory:
+      type: object
+      properties:
+        diabetes:
+          type: boolean
+          description: Family history of diabetes
+          example: true
+        hypertension:
+          type: boolean
+          description: Family history of hypertension
+          example: false
+        heartDisease:
+          type: boolean
+          description: Family history of heart disease
+          example: true
+    InsuranceDetails:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: Insurance provider name
+          example: Star Health
+          maxLength: 50
+          minLength: 2
+        policyNumber:
+          type: string
+          description: Insurance policy number
+          example: STAR123456
+          maxLength: 30
+          minLength: 5
+        validTill:
+          type: string
+          format: date
+          description: Insurance validity date
+          example: "2025-12-31"
+    MedicalInfo:
+      type: object
+      properties:
+        bloodGroup:
+          type: string
+          description: Blood group of the patient
+          example: B+
+          pattern: "^(A|B|AB|O)[+-]$"
+        allergies:
+          type: array
+          description: List of allergies
+          example:
+            - Penicillin
+            - Dust
+          items:
+            type: string
+        existingConditions:
+          type: array
+          description: List of existing medical conditions
+          example:
+            - Asthma
+          items:
+            type: string
+        currentMedications:
+          type: array
+          description: List of current medications
+          example:
+            - Salbutamol inhaler
+          items:
+            type: string
+        familyHistory:
+          "$ref": "#/components/schemas/FamilyHistory"
+          description: Family medical history
+    Patient:
+      type: object
+      description: Patient entity containing all registration details
+      properties:
+        phoneNumber:
+          type: string
+          description: Patient's phone number
+          example: 9876543210
+          pattern: "^[0-9]{10}$"
+        personalDetails:
+          "$ref": "#/components/schemas/PersonalDetails"
+          description: Personal details of the patient
+        medicalInfo:
+          "$ref": "#/components/schemas/MedicalInfo"
+          description: Medical information of the patient
+        emergencyContact:
+          "$ref": "#/components/schemas/EmergencyContact"
+          description: Emergency contact details
+        insuranceDetails:
+          "$ref": "#/components/schemas/InsuranceDetails"
+          description: Insurance details of the patient
+        clinicPreferences:
+          "$ref": "#/components/schemas/ClinicPreferences"
+          description: Clinic communication preferences
+        passwordHash:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        usingDefaultPassword:
+          type: boolean
+    PersonalDetails:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Full name of the patient
+          example: Rohan
+          maxLength: 50
+          minLength: 2
+        phoneNumber:
+          type: string
+          description: Patient's phone number
+          example: "+919876543210"
+          maxLength: 13
+          minLength: 10
+        email:
+          type: string
+          description: Patient's email address
+          example: rohan@domain.com
+        birthdate:
+          type: string
+          format: date
+          description: Birthdate in yyyy-MM-dd format
+          example: "1995-08-15"
+        sex:
+          type: string
+          description: Sex of the patient (M/F/O)
+          example: M
+          pattern: "[MFO]"
+        address:
+          "$ref": "#/components/schemas/Address"
+          description: Address details
+        occupation:
+          type: string
+          description: Occupation of the patient
+          example: Software Engineer
+          maxLength: 100
+          minLength: 0
+        age:
+          type: integer
+          format: int32
+      required:
+        - name
+        - phoneNumber
+        - sex
+    UpdatePasswordRequest:
+      type: object
+      properties:
+        newPassword:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          description: Phone number of the patient
+          example: 9789801844
+          minLength: 1
+        password:
+          type: string
+          description: Password for login
+          example: 9789801844
+          minLength: 1
+      required:
+        - password
+        - phoneNumber
+    LoginResponse:
+      type: object
+      properties:
+        patient:
+          "$ref": "#/components/schemas/Patient"
+        token:
+          type: string
+  securitySchemes:
+    bearer-key:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
