@@ -17,10 +17,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * Provides utility methods for JWT (JSON Web Token) creation, validation, and cookie management.
- * This class handles the generation of access and refresh tokens, validation of these tokens,
- * and the creation of HTTP cookies to store them.
- * Configuration values for JWT secret, expiration times, and cookie properties are injected
- * from application properties.
+ * This class handles the generation of access and refresh tokens, validation of these tokens, and
+ * the creation of HTTP cookies to store them. Configuration values for JWT secret, expiration
+ * times, and cookie properties are injected from application properties.
  */
 @Component
 public class TokenProvider {
@@ -44,9 +43,9 @@ public class TokenProvider {
   private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
   /**
-   * Creates a JWT access token for the given user ID and phone number.
-   * The token includes the user ID as the subject and phone number as a custom claim.
-   * It is signed using the HS512 algorithm and has a configured expiration time.
+   * Creates a JWT access token for the given user ID and phone number. The token includes the user
+   * ID as the subject and phone number as a custom claim. It is signed using the HS512 algorithm
+   * and has a configured expiration time.
    *
    * @param userId The unique identifier of the user.
    * @param phoneNumber The user's phone number.
@@ -57,15 +56,19 @@ public class TokenProvider {
         .setSubject(userId) // Standard claim: Subject (user ID)
         .claim("phoneNumber", phoneNumber) // Custom claim: phoneNumber
         .setIssuedAt(new Date()) // Standard claim: Issued At
-        .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs)) // Standard claim: Expiration Date
-        .signWith(SignatureAlgorithm.HS512, jwtSecret) // Sign with HS512 algorithm and the secret key
+        .setExpiration(
+            new Date(
+                System.currentTimeMillis()
+                    + accessTokenExpirationMs)) // Standard claim: Expiration Date
+        .signWith(
+            SignatureAlgorithm.HS512, jwtSecret) // Sign with HS512 algorithm and the secret key
         .compact();
   }
 
   /**
-   * Creates a JWT refresh token for the given user ID.
-   * The token includes the user ID as the subject and a unique token ID (jti).
-   * It is signed using the HS512 algorithm and has a configured expiration time (typically longer than access tokens).
+   * Creates a JWT refresh token for the given user ID. The token includes the user ID as the
+   * subject and a unique token ID (jti). It is signed using the HS512 algorithm and has a
+   * configured expiration time (typically longer than access tokens).
    *
    * @param userId The unique identifier of the user.
    * @return A JWT refresh token string.
@@ -75,16 +78,21 @@ public class TokenProvider {
 
     return Jwts.builder()
         .setSubject(userId) // Standard claim: Subject (user ID)
-        .setId(tokenId) // Standard claim: JWT ID (jti), useful for tracking or revoking refresh tokens
+        .setId(
+            tokenId) // Standard claim: JWT ID (jti), useful for tracking or revoking refresh tokens
         .setIssuedAt(new Date()) // Standard claim: Issued At
-        .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs)) // Standard claim: Expiration Date
-        .signWith(SignatureAlgorithm.HS512, jwtSecret) // Sign with HS512 algorithm and the secret key
+        .setExpiration(
+            new Date(
+                System.currentTimeMillis()
+                    + refreshTokenExpirationMs)) // Standard claim: Expiration Date
+        .signWith(
+            SignatureAlgorithm.HS512, jwtSecret) // Sign with HS512 algorithm and the secret key
         .compact();
   }
 
   /**
-   * Validates an access token.
-   * Checks if the token is correctly signed, not malformed, not expired, and supported.
+   * Validates an access token. Checks if the token is correctly signed, not malformed, not expired,
+   * and supported.
    *
    * @param token The JWT access token string.
    * @return {@code true} if the token is valid, {@code false} otherwise.
@@ -108,8 +116,8 @@ public class TokenProvider {
   }
 
   /**
-   * Validates a refresh token.
-   * Similar to access token validation, checks signature, format, expiration, and support.
+   * Validates a refresh token. Similar to access token validation, checks signature, format,
+   * expiration, and support.
    *
    * @param token The JWT refresh token string.
    * @return {@code true} if the token is valid, {@code false} otherwise.
@@ -118,8 +126,13 @@ public class TokenProvider {
     try {
       Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
       return true;
-    } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-      // Optionally log these exceptions if needed for debugging, but typically returning false is sufficient for validation logic.
+    } catch (SignatureException
+        | MalformedJwtException
+        | ExpiredJwtException
+        | UnsupportedJwtException
+        | IllegalArgumentException e) {
+      // Optionally log these exceptions if needed for debugging, but typically returning false is
+      // sufficient for validation logic.
       // logger.warn("Refresh token validation failed: " + e.getMessage());
       return false;
     }
@@ -140,11 +153,10 @@ public class TokenProvider {
   }
 
   /**
-   * Generates an HTTP-only cookie for the access token.
-   * Configures properties like domain, path, HttpOnly, Secure, SameSite, and MaxAge.
-   * - HttpOnly: Prevents client-side JavaScript access, mitigating XSS.
-   * - Secure: Transmits cookie only over HTTPS (if {@code app.cookies.secure} is true).
-   * - SameSite="Lax": Provides some CSRF protection.
+   * Generates an HTTP-only cookie for the access token. Configures properties like domain, path,
+   * HttpOnly, Secure, SameSite, and MaxAge. - HttpOnly: Prevents client-side JavaScript access,
+   * mitigating XSS. - Secure: Transmits cookie only over HTTPS (if {@code app.cookies.secure} is
+   * true). - SameSite="Lax": Provides some CSRF protection.
    *
    * @param accessToken The JWT access token string.
    * @return A {@link ResponseCookie} object for the access token.
@@ -155,14 +167,16 @@ public class TokenProvider {
         .path("/") // Cookie is valid for all paths
         .httpOnly(true) // Protects against XSS attacks
         .secure(cookieSecure) // Send cookie only over HTTPS if true
-        .sameSite("Lax") // CSRF protection: cookie sent on top-level navigations and GET requests from other sites
+        .sameSite(
+            "Lax") // CSRF protection: cookie sent on top-level navigations and GET requests from
+        // other sites
         .maxAge(accessTokenExpirationMs / 1000) // Max age in seconds
         .build();
   }
 
   /**
-   * Generates an HTTP-only cookie for the refresh token.
-   * Similar configuration as the access token cookie, but typically with a longer MaxAge.
+   * Generates an HTTP-only cookie for the refresh token. Similar configuration as the access token
+   * cookie, but typically with a longer MaxAge.
    *
    * @param refreshToken The JWT refresh token string.
    * @return A {@link ResponseCookie} object for the refresh token.
@@ -179,8 +193,8 @@ public class TokenProvider {
   }
 
   /**
-   * Generates a cookie to clear/invalidate the access token cookie.
-   * This is achieved by setting an empty value and MaxAge to 0.
+   * Generates a cookie to clear/invalidate the access token cookie. This is achieved by setting an
+   * empty value and MaxAge to 0.
    *
    * @return A {@link ResponseCookie} object that clears the access token cookie.
    */
@@ -212,9 +226,9 @@ public class TokenProvider {
   }
 
   /**
-   * Extracts the JWT access token from the HttpServletRequest.
-   * It first attempts to retrieve the token from the "Authorization" header (Bearer token).
-   * If not found in the header, it tries to extract it from an HTTP cookie named "accessToken".
+   * Extracts the JWT access token from the HttpServletRequest. It first attempts to retrieve the
+   * token from the "Authorization" header (Bearer token). If not found in the header, it tries to
+   * extract it from an HTTP cookie named "accessToken".
    *
    * @param request The incoming HttpServletRequest.
    * @return The JWT access token string if found, or {@code null} otherwise.
@@ -231,8 +245,8 @@ public class TokenProvider {
   }
 
   /**
-   * Extracts the token from the "Authorization" HTTP header.
-   * Expects the header in the format "Bearer <token>".
+   * Extracts the token from the "Authorization" HTTP header. Expects the header in the format
+   * "Bearer <token>".
    *
    * @param request The HttpServletRequest.
    * @return The token string if found and correctly formatted, otherwise {@code null}.
@@ -270,7 +284,8 @@ public class TokenProvider {
    *
    * @param request The HttpServletRequest.
    * @param cookieName The name of the cookie to extract.
-   * @return An {@link Optional} containing the cookie value if found, otherwise {@link Optional#empty()}.
+   * @return An {@link Optional} containing the cookie value if found, otherwise {@link
+   *     Optional#empty()}.
    */
   private Optional<String> extractCookieValue(HttpServletRequest request, String cookieName) {
     Cookie[] cookies = request.getCookies();

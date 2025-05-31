@@ -9,10 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * Service class for managing patient-related operations.
- * This includes creating, retrieving, updating, deleting patients,
- * as well as validating login credentials and updating passwords.
- * It interacts with the {@link PatientRepository} for data persistence.
+ * Service class for managing patient-related operations. This includes creating, retrieving,
+ * updating, deleting patients, as well as validating login credentials and updating passwords. It
+ * interacts with the {@link PatientRepository} for data persistence.
  */
 @Service
 public class PatientService {
@@ -26,9 +25,8 @@ public class PatientService {
   }
 
   /**
-   * Creates a new patient record.
-   * If a phone number is provided, it is used as the default password,
-   * which is then hashed. The {@code usingDefaultPassword} flag is set to true.
+   * Creates a new patient record. If a phone number is provided, it is used as the default
+   * password, which is then hashed. The {@code usingDefaultPassword} flag is set to true.
    *
    * @param patient The patient object to be created.
    * @return The saved patient object with its generated ID.
@@ -61,8 +59,8 @@ public class PatientService {
   }
 
   /**
-   * Updates an existing patient's details.
-   * Retrieves the patient by ID and updates fields if new values are provided in {@code updatedPatient}.
+   * Updates an existing patient's details. Retrieves the patient by ID and updates fields if new
+   * values are provided in {@code updatedPatient}.
    *
    * @param id The ID of the patient to update.
    * @param updatedPatient A patient object containing the fields to update.
@@ -113,9 +111,8 @@ public class PatientService {
   }
 
   /**
-   * Validates patient login credentials.
-   * Fetches the patient by phone number and compares the provided password
-   * with the stored hashed password using BCrypt.
+   * Validates patient login credentials. Fetches the patient by phone number and compares the
+   * provided password with the stored hashed password using BCrypt.
    *
    * @param phoneNumber The patient's phone number.
    * @param password The plain text password to validate.
@@ -142,9 +139,9 @@ public class PatientService {
   }
 
   /**
-   * Updates the password for a given patient.
-   * The new password is required and will be hashed using BCrypt.
-   * The {@code usingDefaultPassword} flag is set to false after a successful password update.
+   * Updates the password for a given patient. The new password is required and will be hashed using
+   * BCrypt. The {@code usingDefaultPassword} flag is set to false after a successful password
+   * update.
    *
    * @param patientId The ID of the patient whose password is to be updated.
    * @param newPassword The new plain text password.
