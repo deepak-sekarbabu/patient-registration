@@ -49,4 +49,17 @@ public class PersonalDetails {
   public Integer getAge() {
     return (birthdate != null) ? Period.between(birthdate, LocalDate.now()).getYears() : null;
   }
+
+  @Override
+  public String toString() {
+    return "PersonalDetails(" +
+           "name='[MASKED]'" +
+           ", phoneNumber='[MASKED]'" +
+           ", email='[MASKED]'" +
+           ", birthdate='[MASKED]'" +
+           ", sex='[MASKED]'" +
+           ", address=" + (getAddress() != null ? getAddress().toString() : "null") + // Delegates to Address.toString()
+           ", occupation='[MASKED]'" +
+           ')';
+  }
 }

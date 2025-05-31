@@ -22,4 +22,9 @@ public class FamilyHistory {
 
   @Schema(description = "Family history of heart disease", example = "true")
   private Boolean heartDisease;
+
+  @Override
+  public String toString() {
+    return "FamilyHistory[PHI MASKED]";
+  }
 }

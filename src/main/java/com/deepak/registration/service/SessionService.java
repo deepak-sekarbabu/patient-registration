@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
- * Manages user session data and refresh token blacklisting in memory. This implementation uses
- * {@link ConcurrentHashMap} for storing session information and blacklisted refresh tokens.
+ * Manages user session data and refresh token blacklisting in memory.
+ * This implementation uses {@link ConcurrentHashMap} for storing session information and
+ * blacklisted refresh tokens.
  *
- * <p><b>Note:</b> This in-memory approach is suitable for single-instance deployments. For
- * distributed environments or applications requiring persistent session management and token
- * blacklisting across multiple instances, an external distributed cache like Redis (which is part
- * of this project's stack for other caching purposes) would be a more robust solution.
+ * <p><b>Note:</b> This in-memory approach is suitable for single-instance deployments.
+ * For distributed environments or applications requiring persistent session management
+ * and token blacklisting across multiple instances, an external distributed cache
+ * like Redis (which is part of this project's stack for other caching purposes)
+ * would be a more robust solution.
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
@@ -25,17 +28,16 @@ public class SessionService {
   private long refreshTokenExpirationMs;
 
   /**
-   * Blacklists a refresh token to prevent its reuse, typically after it has been used to issue a
-   * new access token or during logout. The token is stored with an expiration time based on {@code
-   * app.jwt.refresh-token-expiration-ms}. This method also performs a cleanup of other expired
-   * tokens from the blacklist.
+   * Blacklists a refresh token to prevent its reuse, typically after it has been used
+   * to issue a new access token or during logout.
+   * The token is stored with an expiration time based on {@code app.jwt.refresh-token-expiration-ms}.
+   * This method also performs a cleanup of other expired tokens from the blacklist.
    *
    * @param token The refresh token (JWT ID or the token itself) to blacklist.
    */
   public void blacklistRefreshToken(String token) {
     // Store the token with its calculated expiration time.
-    // The value stored is the timestamp when this token should be considered expired from the
-    // blacklist.
+    // The value stored is the timestamp when this token should be considered expired from the blacklist.
     refreshTokenBlacklist.put(token, System.currentTimeMillis() + refreshTokenExpirationMs);
 
     // Proactively clean up any tokens in the blacklist whose expiration time has passed.
@@ -46,10 +48,11 @@ public class SessionService {
   }
 
   /**
-   * Checks if a given refresh token is currently blacklisted. A token is considered blacklisted if
-   * it exists in the blacklist and its recorded expiration time has not yet passed. If a token is
-   * found in the blacklist but its expiration time has passed, it is removed from the blacklist and
-   * considered not blacklisted.
+   * Checks if a given refresh token is currently blacklisted.
+   * A token is considered blacklisted if it exists in the blacklist and its recorded
+   * expiration time has not yet passed.
+   * If a token is found in the blacklist but its expiration time has passed,
+   * it is removed from the blacklist and considered not blacklisted.
    *
    * @param token The refresh token (JWT ID or the token itself) to check.
    * @return {@code true} if the token is blacklisted and still active, {@code false} otherwise.
@@ -70,9 +73,9 @@ public class SessionService {
   }
 
   /**
-   * Stores arbitrary session data for a user, associated with an expiry time. This could be used
-   * for simple session attributes. This method also performs a cleanup of other expired session
-   * data.
+   * Stores arbitrary session data for a user, associated with an expiry time.
+   * This could be used for simple session attributes.
+   * This method also performs a cleanup of other expired session data.
    *
    * @param userId The user ID to associate with the session data.
    * @param sessionData The string representation of session data to store.
@@ -97,8 +100,7 @@ public class SessionService {
    */
   public String getSessionData(String userId) {
     SessionData sessionDataWrapper = sessionMap.get(userId);
-    if (sessionDataWrapper == null
-        || sessionDataWrapper.getExpiryTime() < System.currentTimeMillis()) {
+    if (sessionDataWrapper == null || sessionDataWrapper.getExpiryTime() < System.currentTimeMillis()) {
       // Session data not found or has expired
       if (sessionDataWrapper != null) {
         // Explicitly remove expired session data if encountered during retrieval
@@ -118,14 +120,15 @@ public class SessionService {
     sessionMap.remove(userId);
   }
 
-  /** Inner class to hold session data along with its expiration timestamp. */
+  /**
+   * Inner class to hold session data along with its expiration timestamp.
+   */
   private static class SessionData {
     private final String sessionData;
     private final long expiryTime; // Absolute timestamp (ms since epoch) when this data expires
 
     /**
      * Constructs a SessionData wrapper.
-     *
      * @param sessionData The actual session data string.
      * @param expiryTime The absolute time (milliseconds since epoch) at which this data expires.
      */

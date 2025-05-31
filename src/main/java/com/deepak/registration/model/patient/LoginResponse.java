@@ -24,4 +24,12 @@ public class LoginResponse {
   public void setToken(String token) {
     this.token = token;
   }
+
+  @Override
+  public String toString() {
+    return "LoginResponse(" +
+           "patient=" + (getPatient() != null ? getPatient().toString() : "null") + // Delegates to Patient.toString()
+           ", token='[MASKED_JWT]'" +
+           ')';
+  }
 }
