@@ -117,4 +117,20 @@ public class Patient {
           usingDefaultPassword);
     }
   }
+
+  @Override
+  public String toString() {
+    return "Patient(" +
+           "id=" + getId() +
+           ", phoneNumber='" + (getPhoneNumber() != null ? "[MASKED]" : "null") + '\'' +
+           ", personalDetails=" + (getPersonalDetails() != null ? getPersonalDetails().toString() : "null") +
+           ", medicalInfo=" + (getMedicalInfo() != null ? getMedicalInfo().toString() : "null") +
+           ", emergencyContact=" + (getEmergencyContact() != null ? getEmergencyContact().toString() : "null") +
+           ", insuranceDetails=" + (getInsuranceDetails() != null ? getInsuranceDetails().toString() : "null") +
+           ", clinicPreferences=" + (getClinicPreferences() != null ? getClinicPreferences().toString() : "null") +
+           ", passwordHash='[MASKED]'" + // Explicitly mask passwordHash
+           ", updatedAt=" + getUpdatedAt() +
+           ", usingDefaultPassword=" + isUsingDefaultPassword() + // Assuming getter is isUsingDefaultPassword
+           ')';
+  }
 }
