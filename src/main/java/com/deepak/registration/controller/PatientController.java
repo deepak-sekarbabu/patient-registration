@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -178,6 +180,14 @@ public class PatientController {
           @Valid
           Patient patient) {
     logger.info("Received request: Update patient with id: {}", id);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Long authenticatedUserId = Long.parseLong(authentication.getName());
+
+    if (!authenticatedUserId.equals(id)) {
+      logger.warn(
+          "User with ID {} attempted to update patient with ID {}", authenticatedUserId, id);
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
     logger.debug("Received update request for patient id: {}", id);
     if (patient == null) {
       logger.warn("Update request body is null for patient id: {}", id);
@@ -286,6 +296,17 @@ public class PatientController {
   public ResponseEntity<String> updatePassword(
       @PathVariable Long id, @RequestBody UpdatePasswordRequest request) {
     logger.info("Received request: Update password for patient id: {}", id);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Long authenticatedUserId = Long.parseLong(authentication.getName());
+
+    if (!authenticatedUserId.equals(id)) {
+      logger.warn(
+          "User with ID {} attempted to update password for patient with ID {}",
+          authenticatedUserId,
+          id);
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body("You are not authorized to change this password.");
+    }
     patientService.updatePassword(id, request.getNewPassword());
     logger.info("Password updated successfully for patient id: {}", id);
     return ResponseEntity.ok("Password updated successfully.");

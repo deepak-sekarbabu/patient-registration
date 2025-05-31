@@ -41,10 +41,6 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/v1/api/patients")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/v1/api/patients/*/password")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/v1/api/patients/**")
-                    .permitAll()
                     .requestMatchers("/v1/api/patients/login")
                     .permitAll()
                     .requestMatchers("/v1/api/patients/")
@@ -67,6 +63,10 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**")
                     .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/api/patients/*/password")
+                    .authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/v1/api/patients/**")
+                    .authenticated()
                     .anyRequest()
                     .authenticated());
 
