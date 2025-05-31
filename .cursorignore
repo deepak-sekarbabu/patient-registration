@@ -5,3 +5,4 @@
 *.idea**
 *.gitignore
 *.git
+src/main/resources/logback-spring.xml
