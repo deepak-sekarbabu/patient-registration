@@ -37,9 +37,10 @@ public class TokenProvider {
   private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
   /** Creates a JWT access token for the given user ID */
-  public String createAccessToken(String userId) {
+  public String createAccessToken(String userId, String phoneNumber) {
     return Jwts.builder()
         .setSubject(userId)
+        .claim("phoneNumber", phoneNumber)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
         .signWith(SignatureAlgorithm.HS512, jwtSecret)

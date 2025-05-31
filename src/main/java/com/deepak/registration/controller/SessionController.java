@@ -153,8 +153,19 @@ public class SessionController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid session");
       }
 
+      // Retrieve patient to get phone number
+      Long patientId = Long.parseLong(userId);
+      Patient patient = patientService.getPatientById(patientId);
+
+      if (patient == null || patient.getPersonalDetails() == null) {
+        logger.warn("Patient or personal details not found for userId: {}", userId);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User data not found");
+      }
+
+      String phoneNumber = patient.getPersonalDetails().getPhoneNumber();
+
       // Create new tokens
-      String newAccessToken = tokenProvider.createAccessToken(userId);
+      String newAccessToken = tokenProvider.createAccessToken(userId, phoneNumber);
       String newRefreshToken = tokenProvider.createRefreshToken(userId);
       logger.info("Generated new access and refresh tokens for userId: {}", userId);
 

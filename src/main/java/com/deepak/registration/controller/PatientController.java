@@ -254,7 +254,8 @@ public class PatientController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     logger.info("Login successful for phone number: {}", loginRequest.getPhoneNumber());
-    String token = tokenProvider.createAccessToken(String.valueOf(patient.getId()));
+    String token =
+        tokenProvider.createAccessToken(String.valueOf(patient.getId()), patient.getPhoneNumber());
     LoginResponse loginResponse = new LoginResponse(patient, token);
     return ResponseEntity.ok(loginResponse);
   }
