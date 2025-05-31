@@ -34,7 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     try {
-      // Attempt to extract the JWT access token from the request (from header or cookies)
+      // Attempt to extract the JWT access token from the request (from header or
+      // cookies)
       String accessToken = tokenProvider.extractAccessToken(request);
 
       // Validate the token if it exists
@@ -53,7 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
 
-        // Set additional details for the authentication, such as IP address and browser agent
+        // Set additional details for the authentication, such as IP address and browser
+        // agent
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         // Set the authentication object in Spring Security's context
@@ -67,7 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       logger.error("Could not set user authentication in security context", e);
     }
 
-    // Continue the filter chain, allowing the request to proceed to the next filter or servlet
+    // Continue the filter chain, allowing the request to proceed to the next filter
+    // or servlet
     filterChain.doFilter(request, response);
   }
 
@@ -75,28 +78,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(@SuppressWarnings("null") HttpServletRequest request)
       throws ServletException {
     String path = request.getRequestURI();
-    // This method determines whether the JWT authentication filter should be skipped
-    // for certain request paths. It's crucial for public endpoints that don't require
+    // This method determines whether the JWT authentication filter should be
+    // skipped
+    // for certain request paths. It's crucial for public endpoints that don't
+    // require
     // authentication.
 
     // Authentication-related public endpoints:
-    // - /v1/api/auth/validate: Endpoint for validating tokens (might be public or require specific
+    // - /v1/api/auth/validate: Endpoint for validating tokens (might be public or
+    // require specific
     // handling)
-    // - /v1/api/auth/refresh: Endpoint for refreshing JWT access tokens using a refresh token
+    // - /v1/api/auth/refresh: Endpoint for refreshing JWT access tokens using a
+    // refresh token
     // - /v1/api/auth/logout: Endpoint for user logout
     // - /v1/api/patients/login: Patient login endpoint
-    // - /v1/api/patients/register: Patient registration endpoint (same as POST to /v1/api/patients)
-    // - /v1/api/patients/exists-by-phone: Publicly check if a phone number is already registered
+    // - /v1/api/patients/register: Patient registration endpoint (same as POST to
+    // /v1/api/patients)
+    // - /v1/api/patients/exists-by-phone: Publicly check if a phone number is
+    // already registered
 
     // Public patient actions (specific operations allowed without full JWT auth):
     // - POST /v1/api/patients: Patient registration (creating a new patient)
-    // - POST /v1/api/patients/{id}/password: Setting or updating password for a patient (e.g.,
+    // - POST /v1/api/patients/{id}/password: Setting or updating password for a
+    // patient (e.g.,
     // after registration or for password reset)
-    // - PUT /v1/api/patients/{id}: Updating patient details (might be restricted by ownership in
+    // - PUT /v1/api/patients/{id}: Updating patient details (might be restricted by
+    // ownership in
     // service layer)
 
     // API Documentation and Swagger UI endpoints:
-    // These paths are for accessing API documentation and should be publicly accessible.
+    // These paths are for accessing API documentation and should be publicly
+    // accessible.
     return path.equals("/v1/api/auth/validate")
         || path.equals("/v1/api/auth/refresh")
         || path.equals("/v1/api/auth/logout")
@@ -105,10 +117,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         || path.equals("/v1/api/patients/exists-by-phone")
         || (path.equals("/v1/api/patients") && request.getMethod().equals("POST"))
         || (path.matches("/v1/api/patients/\\d+/password") && request.getMethod().equals("POST"))
-        || (path.matches("/v1/api/patients/\\d+")
-            && request
-                .getMethod()
-                .equals("PUT")) // Consider if PUT should always be public or if some auth is needed
+        /*
+         * REMOVED: || (path.matches("/v1/api/patients/\\d+")
+         * && request
+         * .getMethod()
+         * .equals("PUT"))
+         */
+        // This path requires authentication and should not be skipped
         || path.startsWith("/swagger-ui")
         || path.startsWith("/v3/api-docs")
         || path.startsWith("/swagger-resources")
