@@ -27,9 +27,11 @@ public class LoginResponse {
 
   @Override
   public String toString() {
-    return "LoginResponse(" +
-           "patient=" + (getPatient() != null ? getPatient().toString() : "null") + // Delegates to Patient.toString()
-           ", token='[MASKED_JWT]'" +
-           ')';
+    return "LoginResponse("
+        + "patient="
+        + (getPatient() != null ? getPatient().toString() : "null")
+        + // Delegates to Patient.toString()
+        ", token='[MASKED_JWT]'"
+        + ')';
   }
 }

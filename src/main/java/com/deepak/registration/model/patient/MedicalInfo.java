@@ -35,10 +35,16 @@ public class MedicalInfo {
 
   @Override
   public String toString() {
-    return "MedicalInfo(" +
-           "bloodGroup='" + (getBloodGroup() != null ? "[MASKED]" : "null") + '\'' +
-           // allergies, existingConditions, currentMedications are intentionally excluded as per user feedback
-           ", familyHistory=" + (getFamilyHistory() != null ? getFamilyHistory().toString() : "null") + // Delegates to FamilyHistory.toString()
-           ')';
+    return "MedicalInfo("
+        + "bloodGroup='"
+        + (getBloodGroup() != null ? "[MASKED]" : "null")
+        + '\''
+        +
+        // allergies, existingConditions, currentMedications are intentionally excluded as per user
+        // feedback
+        ", familyHistory="
+        + (getFamilyHistory() != null ? getFamilyHistory().toString() : "null")
+        + // Delegates to FamilyHistory.toString()
+        ')';
   }
 }

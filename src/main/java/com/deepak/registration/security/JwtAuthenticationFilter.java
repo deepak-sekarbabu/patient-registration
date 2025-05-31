@@ -15,9 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * JWT Authentication Filter.
- * This filter intercepts incoming HTTP requests, extracts the JWT access token,
- * validates it, and sets up Spring Security's authentication context if the token is valid.
+ * JWT Authentication Filter. This filter intercepts incoming HTTP requests, extracts the JWT access
+ * token, validates it, and sets up Spring Security's authentication context if the token is valid.
  * It extends OncePerRequestFilter to ensure it's executed once per request.
  */
 @Component
@@ -29,7 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      @SuppressWarnings("null")   HttpServletRequest request, @SuppressWarnings("null")   HttpServletResponse response, @SuppressWarnings("null")   FilterChain filterChain)
+      @SuppressWarnings("null") HttpServletRequest request,
+      @SuppressWarnings("null") HttpServletResponse response,
+      @SuppressWarnings("null") FilterChain filterChain)
       throws ServletException, IOException {
 
     try {
@@ -71,13 +72,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected boolean shouldNotFilter(@SuppressWarnings("null")   HttpServletRequest request) throws ServletException {
+  protected boolean shouldNotFilter(@SuppressWarnings("null") HttpServletRequest request)
+      throws ServletException {
     String path = request.getRequestURI();
     // This method determines whether the JWT authentication filter should be skipped
-    // for certain request paths. It's crucial for public endpoints that don't require authentication.
+    // for certain request paths. It's crucial for public endpoints that don't require
+    // authentication.
 
     // Authentication-related public endpoints:
-    // - /v1/api/auth/validate: Endpoint for validating tokens (might be public or require specific handling)
+    // - /v1/api/auth/validate: Endpoint for validating tokens (might be public or require specific
+    // handling)
     // - /v1/api/auth/refresh: Endpoint for refreshing JWT access tokens using a refresh token
     // - /v1/api/auth/logout: Endpoint for user logout
     // - /v1/api/patients/login: Patient login endpoint
@@ -86,8 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // Public patient actions (specific operations allowed without full JWT auth):
     // - POST /v1/api/patients: Patient registration (creating a new patient)
-    // - POST /v1/api/patients/{id}/password: Setting or updating password for a patient (e.g., after registration or for password reset)
-    // - PUT /v1/api/patients/{id}: Updating patient details (might be restricted by ownership in service layer)
+    // - POST /v1/api/patients/{id}/password: Setting or updating password for a patient (e.g.,
+    // after registration or for password reset)
+    // - PUT /v1/api/patients/{id}: Updating patient details (might be restricted by ownership in
+    // service layer)
 
     // API Documentation and Swagger UI endpoints:
     // These paths are for accessing API documentation and should be publicly accessible.
@@ -99,7 +105,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         || path.equals("/v1/api/patients/exists-by-phone")
         || (path.equals("/v1/api/patients") && request.getMethod().equals("POST"))
         || (path.matches("/v1/api/patients/\\d+/password") && request.getMethod().equals("POST"))
-        || (path.matches("/v1/api/patients/\\d+") && request.getMethod().equals("PUT")) // Consider if PUT should always be public or if some auth is needed
+        || (path.matches("/v1/api/patients/\\d+")
+            && request
+                .getMethod()
+                .equals("PUT")) // Consider if PUT should always be public or if some auth is needed
         || path.startsWith("/swagger-ui")
         || path.startsWith("/v3/api-docs")
         || path.startsWith("/swagger-resources")

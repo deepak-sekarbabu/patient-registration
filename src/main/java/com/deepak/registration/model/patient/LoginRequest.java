@@ -20,9 +20,11 @@ public class LoginRequest {
 
   @Override
   public String toString() {
-    return "LoginRequest(" +
-           "phoneNumber='" + (getPhoneNumber() != null ? "[MASKED]" : "null") + '\'' +
-           ", password='[MASKED]'" +
-           ')';
+    return "LoginRequest("
+        + "phoneNumber='"
+        + (getPhoneNumber() != null ? "[MASKED]" : "null")
+        + '\''
+        + ", password='[MASKED]'"
+        + ')';
   }
 }

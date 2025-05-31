@@ -52,14 +52,16 @@ public class PersonalDetails {
 
   @Override
   public String toString() {
-    return "PersonalDetails(" +
-           "name='[MASKED]'" +
-           ", phoneNumber='[MASKED]'" +
-           ", email='[MASKED]'" +
-           ", birthdate='[MASKED]'" +
-           ", sex='[MASKED]'" +
-           ", address=" + (getAddress() != null ? getAddress().toString() : "null") + // Delegates to Address.toString()
-           ", occupation='[MASKED]'" +
-           ')';
+    return "PersonalDetails("
+        + "name='[MASKED]'"
+        + ", phoneNumber='[MASKED]'"
+        + ", email='[MASKED]'"
+        + ", birthdate='[MASKED]'"
+        + ", sex='[MASKED]'"
+        + ", address="
+        + (getAddress() != null ? getAddress().toString() : "null")
+        + // Delegates to Address.toString()
+        ", occupation='[MASKED]'"
+        + ')';
   }
 }
