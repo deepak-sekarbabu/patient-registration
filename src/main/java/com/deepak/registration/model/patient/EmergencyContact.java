@@ -36,11 +36,14 @@ public class EmergencyContact {
 
   @Override
   public String toString() {
-    return "EmergencyContact(" +
-           "name='[MASKED]'" +
-           ", relationship='" + getRelationship() + '\'' + // Assuming getRelationship() is safe
-           ", phoneNumber='[MASKED]'" +
-           ", address='[MASKED]'" +
-           ')';
+    return "EmergencyContact("
+        + "name='[MASKED]'"
+        + ", relationship='"
+        + getRelationship()
+        + '\''
+        + // Assuming getRelationship() is safe
+        ", phoneNumber='[MASKED]'"
+        + ", address='[MASKED]'"
+        + ')';
   }
 }
