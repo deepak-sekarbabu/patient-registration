@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      @SuppressWarnings("null")   HttpServletRequest request, @SuppressWarnings("null")   HttpServletResponse response, @SuppressWarnings("null")   FilterChain filterChain)
       throws ServletException, IOException {
 
     try {
@@ -70,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+  protected boolean shouldNotFilter(@SuppressWarnings("null")   HttpServletRequest request) throws ServletException {
     String path = request.getRequestURI();
     // This method determines whether the JWT authentication filter should be skipped
     // for certain request paths. It's crucial for public endpoints that don't require
