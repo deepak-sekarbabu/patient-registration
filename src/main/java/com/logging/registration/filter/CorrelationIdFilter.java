@@ -1,4 +1,4 @@
-package com.example.registration.filter;
+package com.logging.registration.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;

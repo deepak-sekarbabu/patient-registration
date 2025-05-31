@@ -20,7 +20,8 @@
                 "-Dspring.liveBeansView.mbeanDomain",
                 "-Dspring.application.admin.enabled=true",
                 "-Dfile.encoding=UTF-8",
-                "-Duser.language=en"
+                "-Duser.language=en",
+                "-DLOG_PATH=."
             ],
             "envFile": "${workspaceFolder}/.env",
         },
@@ -43,7 +44,8 @@
                 "-Dspring.jpa.hibernate.ddl-auto=update",
                 "-Dspring.profiles.active=local",
                 "-javaagent:${HOME}/.m2/repository/org/springframework/springloaded/1.2.8.RELEASE/springloaded-1.2.8.RELEASE.jar",
-                "-noverify"
+                "-noverify",
+                "-DLOG_PATH=."
             ],
             "envFile": "${workspaceFolder}/.env"
         }

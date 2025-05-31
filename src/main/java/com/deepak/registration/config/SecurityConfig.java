@@ -1,9 +1,10 @@
 package com.deepak.registration.config;
 
-import com.deepak.registration.security.JwtAuthenticationFilter;
 import java.util.Arrays;
 import java.util.Collections;
-import lombok.RequiredArgsConstructor;
+
+import com.deepak.registration.security.JwtAuthenticationFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,86 +22,95 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/v1/api/patients")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/v1/api/patients/*/password")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/v1/api/patients/**")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/login")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/register")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/exists-by-phone")
-                    .permitAll()
-                    .requestMatchers("/v1/api/auth/validate")
-                    .permitAll()
-                    .requestMatchers("/v1/api/auth/refresh")
-                    .permitAll()
-                    .requestMatchers("/v1/api/auth/logout")
-                    .permitAll()
-                    .requestMatchers(
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/swagger-ui/index.html",
-                        "/v3/api-docs/**",
-                        "/swagger-resources/**",
-                        "/webjars/**")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.POST, "/v1/api/patients")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.POST, "/v1/api/patients/*/password")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/v1/api/patients/**")
+                                .permitAll()
+                                .requestMatchers("/v1/api/patients/login")
+                                .permitAll()
+                                .requestMatchers("/v1/api/patients/")
+                                .permitAll()
+                                .requestMatchers("/v1/api/patients/register")
+                                .permitAll()
+                                .requestMatchers("/v1/api/patients/exists-by-phone")
+                                .permitAll()
+                                .requestMatchers("/v1/api/auth/validate")
+                                .permitAll()
+                                .requestMatchers("/v1/api/auth/refresh")
+                                .permitAll()
+                                .requestMatchers("/v1/api/auth/logout")
+                                .permitAll()
+                                .requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/index.html",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources/**",
+                                        "/webjars/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/v1/api/patients/by-id")
+                                .authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/v1/api/patients/{id}")
+                                .authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/v1/api/patients/{id}")
+                                .authenticated()
+                                .requestMatchers(HttpMethod.POST, "/v1/api/patients/{id}/password")
+                                .authenticated()
+                                .anyRequest()
+                                .authenticated());
 
-    // Add JWT filter
-    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // Add JWT filter
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-  }
+        return http.build();
+    }
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws Exception {
-    return config.getAuthenticationManager();
-  }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
+        return config.getAuthenticationManager();
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // Add
-    // your
-    // frontend
-    // URL
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
-    configuration.setAllowCredentials(true);
-    configuration.setMaxAge(3600L);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // Add
+        // your
+        // frontend
+        // URL
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-  }
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
