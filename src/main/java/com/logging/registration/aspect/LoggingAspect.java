@@ -1,4 +1,4 @@
-package com.example.registration.aspect;
+package com.logging.registration.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
