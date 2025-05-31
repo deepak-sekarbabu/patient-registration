@@ -34,4 +34,9 @@ public class Address {
   @Size(min = 2, max = 50)
   @Schema(description = "Country name", example = "India")
   private String country;
+
+  @Override
+  public String toString() {
+    return "Address(street='[MASKED]', city='[MASKED]', state='[MASKED]', postalCode='[MASKED]', country='[MASKED]')";
+  }
 }

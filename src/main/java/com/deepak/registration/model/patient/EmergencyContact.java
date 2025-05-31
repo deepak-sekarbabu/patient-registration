@@ -33,4 +33,14 @@ public class EmergencyContact {
   @Size(min = 2, max = 100)
   @Schema(description = "Address of the emergency contact", example = "Same as patient")
   private String address;
+
+  @Override
+  public String toString() {
+    return "EmergencyContact(" +
+           "name='[MASKED]'" +
+           ", relationship='" + getRelationship() + '\'' + // Assuming getRelationship() is safe
+           ", phoneNumber='[MASKED]'" +
+           ", address='[MASKED]'" +
+           ')';
+  }
 }

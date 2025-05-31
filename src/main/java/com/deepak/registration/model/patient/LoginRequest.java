@@ -17,4 +17,12 @@ public class LoginRequest {
   @Schema(description = "Password for login", example = "9789801844")
   @NotBlank
   private String password;
+
+  @Override
+  public String toString() {
+    return "LoginRequest(" +
+           "phoneNumber='" + (getPhoneNumber() != null ? "[MASKED]" : "null") + '\'' +
+           ", password='[MASKED]'" +
+           ')';
+  }
 }

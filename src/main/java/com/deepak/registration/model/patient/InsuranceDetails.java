@@ -27,4 +27,9 @@ public class InsuranceDetails {
   @Future
   @Schema(description = "Insurance validity date", example = "2025-12-31")
   private LocalDate validTill;
+
+  @Override
+  public String toString() {
+    return "InsuranceDetails(provider='[MASKED]', policyNumber='[MASKED]', validTill='[MASKED]')";
+  }
 }

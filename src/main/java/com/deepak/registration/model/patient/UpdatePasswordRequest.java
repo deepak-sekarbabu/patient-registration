@@ -10,4 +10,9 @@ public class UpdatePasswordRequest {
   public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
   }
+
+  @Override
+  public String toString() {
+    return "UpdatePasswordRequest(newPassword='[MASKED]')";
+  }
 }
