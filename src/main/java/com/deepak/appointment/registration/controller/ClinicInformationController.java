@@ -1,8 +1,10 @@
 package com.deepak.appointment.registration.controller;
 
 import com.deepak.appointment.registration.dto.ClinicInfoDropDown;
+import com.deepak.appointment.registration.dto.DoctorInfoDropDown;
 import com.deepak.appointment.registration.model.ClinicInformation;
 import com.deepak.appointment.registration.service.ClinicInformationService;
+import com.deepak.appointment.registration.service.DoctorInformationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,9 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClinicInformationController {
 
   private final ClinicInformationService clinicInformationService;
+  private final DoctorInformationService doctorInformationService;
 
-  public ClinicInformationController(ClinicInformationService clinicInformationService) {
+  public ClinicInformationController(
+      ClinicInformationService clinicInformationService,
+      DoctorInformationService doctorInformationService) {
     this.clinicInformationService = clinicInformationService;
+    this.doctorInformationService = doctorInformationService;
   }
 
   @GetMapping("/get-clinic")
@@ -76,5 +82,25 @@ public class ClinicInformationController {
       })
   public ResponseEntity<List<ClinicInfoDropDown>> getBasicClinicInfo() {
     return ResponseEntity.ok(clinicInformationService.getBasicClinicInfo());
+  }
+
+  @GetMapping("/get-clinic/{clinicId}/doctors")
+  @Operation(
+      summary = "Get doctors for clinic",
+      description =
+          "Retrieves doctor IDs and names for a specific clinic ID, intended for dropdowns",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved doctor list for clinic",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DoctorInfoDropDown.class)))
+      })
+  public ResponseEntity<List<DoctorInfoDropDown>> getDoctorsForClinic(
+      @PathVariable Integer clinicId) {
+    List<DoctorInfoDropDown> doctors = doctorInformationService.getDoctorsForClinic(clinicId);
+    return ResponseEntity.ok(doctors);
   }
 }
