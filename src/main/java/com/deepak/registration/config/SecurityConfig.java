@@ -45,7 +45,7 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.PUT, "/v1/api/patients/**")
                     .permitAll()
-                    .requestMatchers("/v1/api/patients/login")
+                    .requestMatchers("/v1/api/auth/login")
                     .permitAll()
                     .requestMatchers("/v1/api/patients/")
                     .permitAll()

@@ -1,10 +1,7 @@
 package com.deepak.registration.controller;
 
-import com.deepak.registration.model.patient.LoginRequest;
-import com.deepak.registration.model.patient.LoginResponse;
 import com.deepak.registration.model.patient.Patient;
 import com.deepak.registration.model.patient.UpdatePasswordRequest;
-import com.deepak.registration.security.TokenProvider;
 import com.deepak.registration.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,15 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("v1/api/patients")
 public class PatientController {
-
   private final PatientService patientService;
-  private final TokenProvider tokenProvider;
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(PatientController.class);
 
-  public PatientController(PatientService patientService, TokenProvider tokenProvider) {
+  public PatientController(PatientService patientService) {
     this.patientService = patientService;
-    this.tokenProvider = tokenProvider;
   }
 
   @Operation(
@@ -263,39 +257,6 @@ public class PatientController {
       logger.warn("Patient not found for deletion with id: {}", id);
       return ResponseEntity.notFound().build();
     }
-  }
-
-  @Operation(
-      summary = "Patinet Login",
-      description =
-          "Validates login credentials and returns patient info and JWT token if successful.",
-      requestBody =
-          @io.swagger.v3.oas.annotations.parameters.RequestBody(
-              required = true,
-              description = "Login request with phone number and password",
-              content = @Content(schema = @Schema(implementation = LoginRequest.class))),
-      responses = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Login successful",
-            content = @Content(schema = @Schema(implementation = LoginResponse.class))),
-        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
-      })
-  @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(
-      @Valid @org.springframework.web.bind.annotation.RequestBody LoginRequest loginRequest) {
-    logger.info("Received request: Login for phone number: {}", loginRequest.getPhoneNumber());
-    Patient patient =
-        patientService.validateLogin(loginRequest.getPhoneNumber(), loginRequest.getPassword());
-    if (patient == null) {
-      logger.warn("Login failed for phone number: {}", loginRequest.getPhoneNumber());
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-    logger.info("Login successful for phone number: {}", loginRequest.getPhoneNumber());
-    String token =
-        tokenProvider.createAccessToken(String.valueOf(patient.getId()), patient.getPhoneNumber());
-    LoginResponse loginResponse = new LoginResponse(patient, token);
-    return ResponseEntity.ok(loginResponse);
   }
 
   @Operation(

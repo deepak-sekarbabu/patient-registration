@@ -1,5 +1,7 @@
 package com.deepak.registration.controller;
 
+import com.deepak.registration.model.patient.LoginRequest;
+import com.deepak.registration.model.patient.LoginResponse;
 import com.deepak.registration.model.patient.Patient;
 import com.deepak.registration.security.TokenProvider;
 import com.deepak.registration.service.PatientService;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -219,5 +222,48 @@ public class SessionController {
 
     logger.info("Cleared access and refresh token cookies during logout");
     return ResponseEntity.ok().body("Logged out successfully");
+  }
+
+  @Operation(
+      summary = "Patient Login",
+      description =
+          "Validates login credentials and returns patient info and JWT token if successful.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              required = true,
+              description = "Login request with phone number and password",
+              content = @Content(schema = @Schema(implementation = LoginRequest.class))),
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Login successful",
+            content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+      })
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponse> login(
+      @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    logger.info("Received request: Login for phone number: {}", loginRequest.getPhoneNumber());
+    Patient patient =
+        patientService.validateLogin(loginRequest.getPhoneNumber(), loginRequest.getPassword());
+    if (patient == null) {
+      logger.warn("Login failed for phone number: {}", loginRequest.getPhoneNumber());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    logger.info("Login successful for phone number: {}", loginRequest.getPhoneNumber());
+
+    String userId = String.valueOf(patient.getId());
+    String accessToken = tokenProvider.createAccessToken(userId, patient.getPhoneNumber());
+    String refreshToken = tokenProvider.createRefreshToken(userId);
+
+    // Set cookies
+    ResponseCookie accessTokenCookie = tokenProvider.generateAccessTokenCookie(accessToken);
+    ResponseCookie refreshTokenCookie = tokenProvider.generateRefreshTokenCookie(refreshToken);
+
+    response.addHeader("Set-Cookie", accessTokenCookie.toString());
+    response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+    LoginResponse loginResponse = new LoginResponse(patient, accessToken);
+    return ResponseEntity.ok(loginResponse);
   }
 }
