@@ -51,3 +51,4 @@ target/surefire-reports/TEST-com.deepak.patient.registration.RegistrationApplica
 target/test-ids/junit-platform-unique-ids-9187225289561995535.txt
 target/**
 target/spotless-index
+.windsurf/rules/code-style-guide.md
