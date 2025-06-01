@@ -5,17 +5,18 @@ import com.deepak.appointment.registration.dto.DoctorInfoDropDown;
 import com.deepak.appointment.registration.model.ClinicInformation;
 import com.deepak.appointment.registration.service.ClinicInformationService;
 import com.deepak.appointment.registration.service.DoctorInformationService;
+import com.deepak.appointment.registration.service.SlotInformationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/api")
@@ -24,12 +25,15 @@ public class ClinicInformationController {
 
   private final ClinicInformationService clinicInformationService;
   private final DoctorInformationService doctorInformationService;
+  private final SlotInformationService slotInformationService;
 
   public ClinicInformationController(
       ClinicInformationService clinicInformationService,
-      DoctorInformationService doctorInformationService) {
+      DoctorInformationService doctorInformationService,
+      SlotInformationService slotInformationService) {
     this.clinicInformationService = clinicInformationService;
     this.doctorInformationService = doctorInformationService;
+    this.slotInformationService = slotInformationService;
   }
 
   @GetMapping("/get-clinic")
@@ -102,5 +106,48 @@ public class ClinicInformationController {
       @PathVariable Integer clinicId) {
     List<DoctorInfoDropDown> doctors = doctorInformationService.getDoctorsForClinic(clinicId);
     return ResponseEntity.ok(doctors);
+  }
+
+  @GetMapping("/clinics/{clinicId}/doctors/{doctorId}/available-dates")
+  @Operation(
+      summary = "Get available dates for booking",
+      description =
+          "Retrieves a list of dates with available slots for a specific clinic and doctor",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved available dates",
+            content = @Content(mediaType = "application/json"))
+      })
+  public ResponseEntity<List<LocalDate>> getAvailableDates(
+      @PathVariable Integer clinicId, @PathVariable String doctorId) {
+    List<LocalDate> availableDates = slotInformationService.getAvailableDates(clinicId, doctorId);
+    return ResponseEntity.ok(availableDates);
+  }
+
+  @GetMapping("/clinics/{clinicId}/doctors/{doctorId}/slots")
+  @Operation(
+      summary = "Get available time slots",
+      description = "Retrieves available time slots for a specific clinic, doctor, and date",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved available slots",
+            content = @Content(mediaType = "application/json"))
+      })
+  public ResponseEntity<Map<String, Object>> getAvailableSlots(
+      @PathVariable Integer clinicId,
+      @PathVariable String doctorId,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+    Map<String, List<Map<String, String>>> slots =
+        slotInformationService.getAvailableSlots(clinicId, doctorId, date);
+
+    return ResponseEntity.ok(
+        Map.of(
+            "clinicId", clinicId,
+            "doctorId", doctorId,
+            "date", date,
+            "availableSlots", slots));
   }
 }
