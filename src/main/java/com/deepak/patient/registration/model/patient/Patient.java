@@ -98,7 +98,7 @@ public class Patient {
     private ClinicPreferences clinicPreferences;
     private String passwordHash;
     private LocalDateTime updatedAt;
-    private boolean usingDefaultPassword = true;
+    private final boolean usingDefaultPassword = true;
 
     public Patient build() {
       if (this.updatedAt == null) {

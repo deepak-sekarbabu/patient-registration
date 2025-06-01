@@ -104,7 +104,7 @@ public class SessionController {
       }
 
       String userId = tokenProvider.getUserIdFromToken(token);
-      Long patientId = Long.parseLong(userId);
+      Long patientId = Long.valueOf(userId);
       Patient patient = patientService.getPatientById(patientId);
 
       if (patient == null) {
@@ -157,7 +157,7 @@ public class SessionController {
       }
 
       // Retrieve patient to get phone number
-      Long patientId = Long.parseLong(userId);
+      Long patientId = Long.valueOf(userId);
       Patient patient = patientService.getPatientById(patientId);
 
       if (patient == null || patient.getPersonalDetails() == null) {

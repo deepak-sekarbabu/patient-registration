@@ -5,7 +5,7 @@
             "type": "java",
             "name": "Spring Boot - RegistrationApplication <registration>",
             "request": "launch",
-            "mainClass": "com.deepak.registration.RegistrationApplication",
+            "mainClass": "com.deepak.RegistrationApplication",
             "projectName": "registration",
             "cwd": "${workspaceFolder}",
             "vmArgs": [
@@ -28,7 +28,7 @@
             "type": "java",
             "name": "Debug with HotSwap",
             "request": "launch",
-            "mainClass": "com.deepak.registration.RegistrationApplication",
+            "mainClass": "com.deepak.RegistrationApplication",
             "projectName": "registration",
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",

@@ -135,7 +135,7 @@ public class PatientController {
     logger.info("Received request: Get patient by id: {}", id);
     // Get the authenticated user's ID from the security context
     Long authenticatedUserId =
-        Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
     // Check if the requested ID matches the authenticated user's ID
     if (!authenticatedUserId.equals(id)) {
@@ -188,7 +188,7 @@ public class PatientController {
     logger.info("Received request: Update patient with id: {}", id);
     // Get the authenticated user's ID from the security context
     Long authenticatedUserId =
-        Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
     // Check if the requested ID matches the authenticated user's ID
     if (!authenticatedUserId.equals(id)) {
@@ -236,7 +236,7 @@ public class PatientController {
     logger.info("Received request: Delete patient by id: {}", id);
     // Get the authenticated user's ID from the security context
     Long authenticatedUserId =
-        Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
     // Check if the requested ID matches the authenticated user's ID
     if (!authenticatedUserId.equals(id)) {
@@ -287,7 +287,7 @@ public class PatientController {
     logger.info("Received request: Update password for patient id: {}", id);
     // Get the authenticated user's ID from the security context
     Long authenticatedUserId =
-        Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getName());
 
     // Check if the requested ID matches the authenticated user's ID
     if (!authenticatedUserId.equals(id)) {
