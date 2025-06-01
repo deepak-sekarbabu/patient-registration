@@ -3,7 +3,7 @@
 
     <springProperty scope="context" name="springAppName" source="spring.application.name" />
 
-    <property name="LOG_PATH" value="${LOG_PATH}/logs" />
+    <property name="LOG_PATH" value="./logs" />
     <property name="INFO_LOG_FILE" value="${LOG_PATH}/${springAppName}-info.log" />
     <property name="ERROR_LOG_FILE" value="${LOG_PATH}/${springAppName}-error.log" />
 
