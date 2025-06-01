@@ -1,6 +1,6 @@
 package com.deepak.appointment.registration.controller;
 
-import com.deepak.appointment.registration.dto.ClinicBasicInfoDTO;
+import com.deepak.appointment.registration.dto.ClinicInfoDropDown;
 import com.deepak.appointment.registration.model.ClinicInformation;
 import com.deepak.appointment.registration.service.ClinicInformationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ public class ClinicInformationController {
 
   private final ClinicInformationService clinicInformationService;
 
-  @Autowired
   public ClinicInformationController(ClinicInformationService clinicInformationService) {
     this.clinicInformationService = clinicInformationService;
   }
@@ -74,9 +72,9 @@ public class ClinicInformationController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ClinicBasicInfoDTO.class)))
+                    schema = @Schema(implementation = ClinicInfoDropDown.class)))
       })
-  public ResponseEntity<List<ClinicBasicInfoDTO>> getBasicClinicInfo() {
+  public ResponseEntity<List<ClinicInfoDropDown>> getBasicClinicInfo() {
     return ResponseEntity.ok(clinicInformationService.getBasicClinicInfo());
   }
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClinicBasicInfoDTO {
+public class ClinicInfoDropDown {
   private Integer clinicId;
   private String clinicName;
 }
