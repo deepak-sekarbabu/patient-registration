@@ -46,8 +46,8 @@ target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.l
 target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
 target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
-target/surefire-reports/com.deepak.registration.RegistrationApplicationTests.txt
-target/surefire-reports/TEST-com.deepak.registration.RegistrationApplicationTests.xml
+target/surefire-reports/com.deepak.patient.registration.RegistrationApplicationTests.txt
+target/surefire-reports/TEST-com.deepak.patient.registration.RegistrationApplicationTests.xml
 target/test-ids/junit-platform-unique-ids-9187225289561995535.txt
 target/**
 target/spotless-index

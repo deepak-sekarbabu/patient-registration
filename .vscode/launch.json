@@ -9,8 +9,8 @@
             "projectName": "registration",
             "cwd": "${workspaceFolder}",
             "vmArgs": [
-                "-Xms256m",
-                "-Xmx1G",
+                "-Xms128m",
+                "-Xmx256G",
                 "-XX:+UseG1GC",
                 "-XX:+UseStringDeduplication",
                 "-XX:MaxGCPauseMillis=200",
@@ -21,9 +21,8 @@
                 "-Dspring.application.admin.enabled=true",
                 "-Dfile.encoding=UTF-8",
                 "-Duser.language=en",
-                "-DLOG_PATH=."
             ],
-            "envFile": "${workspaceFolder}/.env",
+            "envFile": "${workspaceFolder}/.env"
         },
         {
             "type": "java",
@@ -34,8 +33,8 @@
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "vmArgs": [
-                "-Xms256m",
-                "-Xmx1G",
+                "-Xms128m",
+                "-Xmx256G",
                 "-XX:+UseG1GC",
                 "-XX:+UseStringDeduplication",
                 "-Dspring.devtools.restart.enabled=true",
@@ -43,9 +42,7 @@
                 "-Dspring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true",
                 "-Dspring.jpa.hibernate.ddl-auto=update",
                 "-Dspring.profiles.active=local",
-                "-javaagent:${HOME}/.m2/repository/org/springframework/springloaded/1.2.8.RELEASE/springloaded-1.2.8.RELEASE.jar",
-                "-noverify",
-                "-DLOG_PATH=."
+                "-noverify"
             ],
             "envFile": "${workspaceFolder}/.env"
         }

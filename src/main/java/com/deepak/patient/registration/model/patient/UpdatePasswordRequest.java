@@ -1,0 +1,18 @@
+package com.deepak.patient.registration.model.patient;
+
+public class UpdatePasswordRequest {
+  private String newPassword;
+
+  public String getNewPassword() {
+    return newPassword;
+  }
+
+  public void setNewPassword(String newPassword) {
+    this.newPassword = newPassword;
+  }
+
+  @Override
+  public String toString() {
+    return "UpdatePasswordRequest(newPassword='[MASKED]')";
+  }
+}
