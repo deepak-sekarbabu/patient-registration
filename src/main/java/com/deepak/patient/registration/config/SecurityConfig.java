@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +21,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -74,6 +72,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE, "/v1/api/patients/{id}")
                     .authenticated()
                     .requestMatchers(HttpMethod.POST, "/v1/api/patients/{id}/password")
+                    .authenticated()
+                    .requestMatchers(HttpMethod.GET, "/v1/api/clinics/*/doctors/*/available-dates")
                     .authenticated()
                     .anyRequest()
                     .authenticated());

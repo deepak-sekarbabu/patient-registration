@@ -4,6 +4,8 @@ public class DoctorInfoDropDown {
   private String doctorId;
   private String doctorName;
 
+  public DoctorInfoDropDown() {}
+
   public DoctorInfoDropDown(String doctorId, String doctorName) {
     this.doctorId = doctorId;
     this.doctorName = doctorName;

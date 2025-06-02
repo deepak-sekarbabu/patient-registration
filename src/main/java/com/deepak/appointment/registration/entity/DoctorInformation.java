@@ -10,8 +10,7 @@ import lombok.Data;
 @Table(name = "doctor_clinic_view")
 public class DoctorInformation {
 
-  @Id
-  private String doctorId;
+  @Id private String doctorId;
   private String doctorName;
   private Integer clinicId;
   private String clinicName;
