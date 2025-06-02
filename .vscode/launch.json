@@ -1,50 +1,16 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Spring Boot - RegistrationApplication <registration>",
-            "request": "launch",
-            "mainClass": "com.deepak.RegistrationApplication",
-            "projectName": "registration",
-            "cwd": "${workspaceFolder}",
-            "vmArgs": [
-                "-Xms128m",
-                "-Xmx256G",
-                "-XX:+UseG1GC",
-                "-XX:+UseStringDeduplication",
-                "-XX:MaxGCPauseMillis=200",
-                "-XX:InitiatingHeapOccupancyPercent=45",
-                "-Dspring.profiles.active=local",
-                "-Dspring.devtools.restart.enabled=true",
-                "-Dspring.liveBeansView.mbeanDomain",
-                "-Dspring.application.admin.enabled=true",
-                "-Dfile.encoding=UTF-8",
-                "-Duser.language=en",
-            ],
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Debug with HotSwap",
-            "request": "launch",
-            "mainClass": "com.deepak.RegistrationApplication",
-            "projectName": "registration",
-            "cwd": "${workspaceFolder}",
-            "console": "internalConsole",
-            "vmArgs": [
-                "-Xms128m",
-                "-Xmx256G",
-                "-XX:+UseG1GC",
-                "-XX:+UseStringDeduplication",
-                "-Dspring.devtools.restart.enabled=true",
-                "-Dspring.devtools.livereload.enabled=true",
-                "-Dspring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true",
-                "-Dspring.jpa.hibernate.ddl-auto=update",
-                "-Dspring.profiles.active=local",
-                "-noverify"
-            ],
-            "envFile": "${workspaceFolder}/.env"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-RegistrationApplication<registration>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.deepak.RegistrationApplication",
+      "projectName": "registration",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "internalConsole"
+    }
+  ]
 }
