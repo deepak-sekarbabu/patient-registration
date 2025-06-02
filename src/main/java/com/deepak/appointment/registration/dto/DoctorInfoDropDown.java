@@ -1,20 +1,20 @@
 package com.deepak.appointment.registration.dto;
 
 public class DoctorInfoDropDown {
-  private Integer doctorId;
+  private String doctorId;
   private String doctorName;
 
-  public DoctorInfoDropDown(Integer doctorId, String doctorName) {
+  public DoctorInfoDropDown(String doctorId, String doctorName) {
     this.doctorId = doctorId;
     this.doctorName = doctorName;
   }
 
   // Getters and setters
-  public Integer getDoctorId() {
+  public String getDoctorId() {
     return doctorId;
   }
 
-  public void setDoctorId(Integer doctorId) {
+  public void setDoctorId(String doctorId) {
     this.doctorId = doctorId;
   }
 

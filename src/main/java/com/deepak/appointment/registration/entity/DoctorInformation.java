@@ -10,14 +10,15 @@ import lombok.Data;
 @Table(name = "doctor_clinic_view")
 public class DoctorInformation {
 
-  @Id private Integer doctorId;
+  @Id
+  private String doctorId;
   private String doctorName;
   private Integer clinicId;
   private String clinicName;
 
   public DoctorInformation() {}
 
-  public DoctorInformation(Integer doctorId, String doctorName) {
+  public DoctorInformation(String doctorId, String doctorName) {
     this.doctorId = doctorId;
     this.doctorName = doctorName;
   }
