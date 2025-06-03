@@ -1,6 +1,13 @@
 package com.deepak.appointment.registration.entity;
 
-import jakarta.persistence.*;
+import com.deepak.appointment.registration.converter.LocalTimeConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -20,6 +27,7 @@ public class SlotInformation {
   private String shiftTime;
 
   @Column(name = "slot_time")
+  @Convert(converter = LocalTimeConverter.class)
   private LocalTime slotTime;
 
   @Column(name = "clinic_id")
