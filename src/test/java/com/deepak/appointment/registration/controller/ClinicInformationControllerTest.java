@@ -1,7 +1,10 @@
 package com.deepak.appointment.registration.controller;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows; // Add this
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -15,6 +18,7 @@ import com.deepak.appointment.registration.service.ClinicInformationService;
 import com.deepak.appointment.registration.service.DoctorInformationService;
 import com.deepak.appointment.registration.service.SlotInformationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException; // Add this
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -129,12 +133,20 @@ class ClinicInformationControllerTest {
 
     mockMvc
         .perform(get("/v1/api/get-clinic/1"))
-        .andExpect(status().isInternalServerError()) // Expecting 500 for unhandled RuntimeException
-        .andExpect(result -> assertTrue(result.getResolvedException() instanceof RuntimeException))
+        .andExpect(status().isInternalServerError())
         .andExpect(
-            result ->
-                assertEquals(
-                    "Clinic not found with id: 1", result.getResolvedException().getMessage()));
+            result -> {
+              Throwable resolvedException = result.getResolvedException();
+              assertNotNull(resolvedException, "Expected an exception to be resolved");
+              // Check the cause of the ServletException
+              Throwable cause = resolvedException.getCause();
+              assertTrue(
+                  cause instanceof RuntimeException,
+                  "Expected cause to be RuntimeException, but got: "
+                      + (cause != null ? cause.getClass().getName() : "null"));
+              assertEquals(
+                  "Clinic not found with id: 1", cause.getMessage(), "Exception message mismatch");
+            });
   }
 
   @Test

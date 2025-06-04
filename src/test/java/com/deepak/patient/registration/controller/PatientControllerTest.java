@@ -38,6 +38,18 @@ class PatientControllerTest {
   private com.deepak.appointment.registration.service.ClinicInformationService
       clinicInformationService; // To prevent loading ClinicInformationController and its deps
 
+  @MockBean
+  private com.deepak.appointment.registration.controller.ClinicInformationController
+      clinicInformationController; // Added to prevent its full initialization and further deps
+
+  @MockBean
+  private com.deepak.patient.registration.security.CustomUserDetailsService
+      customUserDetailsService; // Standard mock for security in WebMvcTest
+
+  @MockBean
+  private com.deepak.patient.registration.controller.SessionController
+      sessionController; // Prophylactic mock
+
   @Autowired private ObjectMapper objectMapper;
 
   private Patient patient;
@@ -64,6 +76,7 @@ class PatientControllerTest {
   }
 
   @Test
+  @WithMockUser // Added for consistency / potential security
   void createPatient_shouldReturnCreatedPatient_OnSuccess() throws Exception {
     when(patientService.createPatient(any(Patient.class))).thenReturn(patient);
 
@@ -79,6 +92,7 @@ class PatientControllerTest {
   }
 
   @Test
+  @WithMockUser // Added for consistency / potential security
   void createPatient_shouldReturnInternalServerError_WhenServiceThrowsIllegalArgumentException()
       throws Exception {
     when(patientService.createPatient(any(Patient.class)))
@@ -96,6 +110,7 @@ class PatientControllerTest {
   }
 
   @Test
+  @WithMockUser // Added for consistency / potential security
   void getPatientByPhoneNumber_shouldReturnPatient_WhenFound() throws Exception {
     when(patientService.getPatientByPhoneNumber("+911234567890")).thenReturn(patient);
 
@@ -106,6 +121,7 @@ class PatientControllerTest {
   }
 
   @Test
+  @WithMockUser // Added for consistency / potential security
   void getPatientByPhoneNumber_shouldReturnNotFound_WhenMissing() throws Exception {
     when(patientService.getPatientByPhoneNumber("unknown")).thenReturn(null);
 
@@ -115,6 +131,7 @@ class PatientControllerTest {
   }
 
   @Test
+  @WithMockUser // Added for consistency / potential security
   void existsByPhoneNumber_shouldReturnTrue_WhenPatientExists() throws Exception {
     when(patientService.existsByPhoneNumber("+911234567890")).thenReturn(true);
     mockMvc
@@ -124,6 +141,7 @@ class PatientControllerTest {
   }
 
   @Test
+  @WithMockUser // Added for consistency / potential security
   void existsByPhoneNumber_shouldReturnFalse_WhenPatientDoesNotExist() throws Exception {
     when(patientService.existsByPhoneNumber("unknown")).thenReturn(false);
     mockMvc
