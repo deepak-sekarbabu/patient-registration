@@ -3,7 +3,7 @@ package com.deepak.appointment.registration.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.deepak.appointment.registration.model.SlotInformation;
+import com.deepak.appointment.registration.entity.SlotInformation;
 import com.deepak.appointment.registration.repository.SlotInformationRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -71,7 +71,7 @@ class SlotInformationServiceTest {
     slot.setSlotId(1L);
     slot.setShiftTime("Morning");
     slot.setSlotTime(LocalTime.of(10, 0));
-    slot.setAvailable(true); // Assuming SlotInformation has an 'isAvailable' field
+    slot.setIsAvailable(true); // Assuming SlotInformation has an 'isAvailable' field
 
     when(slotInformationRepository.findAvailableSlotsByClinicDoctorAndDate(
             clinicId, doctorId, date))

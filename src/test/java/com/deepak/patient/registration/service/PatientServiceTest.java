@@ -40,12 +40,10 @@ class PatientServiceTest {
     patient.setPhoneNumber("+919876543210");
     // Password set in specific tests where needed for clarity
     patient.setUsingDefaultPassword(false);
-    patient.setCreatedAt(LocalDateTime.now().minusDays(1));
     patient.setUpdatedAt(LocalDateTime.now().minusHours(1));
 
     PersonalDetails personalDetails = new PersonalDetails();
-    personalDetails.setFirstName("Test");
-    personalDetails.setLastName("User");
+    personalDetails.setName("Test");
     personalDetails.setEmail("test.user@example.com");
 
     patientWithDetails = new Patient();
@@ -54,8 +52,8 @@ class PatientServiceTest {
     patientWithDetails.setPasswordHash(encoder.encode("password123"));
     patientWithDetails.setUsingDefaultPassword(false);
     patientWithDetails.setPersonalDetails(personalDetails);
-    patientWithDetails.setMedicalInfo("No known allergies.");
-    patientWithDetails.setCreatedAt(LocalDateTime.now().minusDays(1));
+    // patientWithDetails.setMedicalInfo("");
+
     patientWithDetails.setUpdatedAt(LocalDateTime.now().minusHours(1));
   }
 
@@ -72,7 +70,6 @@ class PatientServiceTest {
               Patient p = invocation.getArgument(0);
               p.setId(2L); // Simulate save assigning an ID
               // Simulate JPA @PrePersist if PatientService doesn't set timestamps
-              if (p.getCreatedAt() == null) p.setCreatedAt(LocalDateTime.now());
               if (p.getUpdatedAt() == null) p.setUpdatedAt(LocalDateTime.now());
               return p;
             });
@@ -84,7 +81,6 @@ class PatientServiceTest {
     assertNotNull(savedPatient.getPasswordHash());
     assertTrue(encoder.matches("1234567890", savedPatient.getPasswordHash()));
     assertTrue(savedPatient.isUsingDefaultPassword());
-    assertNotNull(savedPatient.getCreatedAt());
     assertNotNull(savedPatient.getUpdatedAt());
     verify(patientRepository, times(1)).save(any(Patient.class));
 
@@ -128,7 +124,7 @@ class PatientServiceTest {
     Patient found = patientService.getPatientByPhoneNumber("+919876543210");
     assertNotNull(found);
     assertEquals("+919876543210", found.getPhoneNumber());
-    assertEquals("Test", found.getPersonalDetails().getFirstName());
+    assertEquals("Test", found.getPersonalDetails().getName());
   }
 
   @Test
@@ -160,7 +156,7 @@ class PatientServiceTest {
     Patient found = patientService.getPatientById(1L);
     assertNotNull(found);
     assertEquals(1L, found.getId());
-    assertEquals("Test", found.getPersonalDetails().getFirstName());
+    assertEquals("Test", found.getPersonalDetails().getName());
   }
 
   @Test
@@ -176,20 +172,16 @@ class PatientServiceTest {
     existingPatient.setId(1L);
     existingPatient.setPhoneNumber("+919876543210");
     PersonalDetails originalDetails = new PersonalDetails();
-    originalDetails.setFirstName("OriginalFirst");
-    originalDetails.setLastName("OriginalLast");
+    originalDetails.setName("OriginalFirst");
     existingPatient.setPersonalDetails(originalDetails);
-    existingPatient.setMedicalInfo("Original Medical Info");
     LocalDateTime initialUpdatedAt = LocalDateTime.now().minusDays(1);
     existingPatient.setUpdatedAt(initialUpdatedAt);
 
     Patient updates = new Patient();
     PersonalDetails newDetails = new PersonalDetails();
-    newDetails.setFirstName("UpdatedName");
-    newDetails.setLastName("UpdatedLastName"); // Add last name to updates
+    newDetails.setName("UpdatedName");
     newDetails.setEmail("updated.email@example.com"); // Add email
     updates.setPersonalDetails(newDetails);
-    updates.setMedicalInfo("New Medical Info");
 
     when(patientRepository.findById(1L)).thenReturn(Optional.of(existingPatient));
     ArgumentCaptor<Patient> patientCaptor = ArgumentCaptor.forClass(Patient.class);
@@ -199,8 +191,7 @@ class PatientServiceTest {
     Patient updatedPatient = patientService.updatePatient(1L, updates);
 
     assertNotNull(updatedPatient);
-    assertEquals("UpdatedName", updatedPatient.getPersonalDetails().getFirstName());
-    assertEquals("UpdatedLastName", updatedPatient.getPersonalDetails().getLastName());
+    assertEquals("UpdatedName", updatedPatient.getPersonalDetails().getName());
     assertEquals("updated.email@example.com", updatedPatient.getPersonalDetails().getEmail());
     assertEquals("New Medical Info", updatedPatient.getMedicalInfo());
     assertEquals("+919876543210", updatedPatient.getPhoneNumber()); // Should not change
@@ -211,7 +202,7 @@ class PatientServiceTest {
     verify(patientRepository, times(1)).save(any(Patient.class));
 
     Patient captured = patientCaptor.getValue();
-    assertEquals("UpdatedName", captured.getPersonalDetails().getFirstName());
+    assertEquals("UpdatedName", captured.getPersonalDetails().getName());
     assertTrue(captured.getUpdatedAt().isAfter(initialUpdatedAt));
   }
 
@@ -222,8 +213,7 @@ class PatientServiceTest {
     existingPatient.setId(1L);
     existingPatient.setPhoneNumber("originalPhone");
     PersonalDetails originalDetails = new PersonalDetails();
-    originalDetails.setFirstName("OriginalFirst");
-    originalDetails.setLastName("OriginalLast");
+    originalDetails.setName("OriginalFirst");
     originalDetails.setEmail("original.email@example.com");
     existingPatient.setPersonalDetails(originalDetails);
     LocalDateTime initialUpdatedAt = LocalDateTime.now().minusDays(1);
@@ -231,12 +221,11 @@ class PatientServiceTest {
 
     Patient updates = new Patient();
     PersonalDetails partialNewDetails = new PersonalDetails();
-    partialNewDetails.setFirstName("UpdatedFirst"); // Only FirstName is updated
+    partialNewDetails.setName("UpdatedFirst"); // Only FirstName is updated
     // LastName and Email are null in partialNewDetails
     updates.setPersonalDetails(partialNewDetails);
     // MedicalInfo is null in updates, so existingPatient's MedicalInfo should persist.
     updates.setMedicalInfo(null);
-    existingPatient.setMedicalInfo("Existing Medical Info");
 
     when(patientRepository.findById(1L)).thenReturn(Optional.of(existingPatient));
     when(patientRepository.save(any(Patient.class)))
@@ -244,12 +233,10 @@ class PatientServiceTest {
 
     Patient updated = patientService.updatePatient(1L, updates);
 
-    assertEquals("UpdatedFirst", updated.getPersonalDetails().getFirstName());
+    assertEquals("UpdatedFirst", updated.getPersonalDetails().getName());
     // Based on PatientService logic, if a field in updates.personalDetails is null, it will
     // overwrite existing.
-    assertNull(
-        updated.getPersonalDetails().getLastName(),
-        "LastName should be null as it was null in the update's PersonalDetails");
+
     assertNull(
         updated.getPersonalDetails().getEmail(),
         "Email should be null as it was null in the update's PersonalDetails");
@@ -266,15 +253,13 @@ class PatientServiceTest {
     Patient existingPatient = new Patient();
     existingPatient.setId(1L);
     PersonalDetails originalDetails = new PersonalDetails();
-    originalDetails.setFirstName("OriginalFirst");
+    originalDetails.setName("OriginalFirst");
     existingPatient.setPersonalDetails(originalDetails);
-    existingPatient.setMedicalInfo("Original Medical");
     LocalDateTime initialUpdatedAt = LocalDateTime.now().minusDays(1);
     existingPatient.setUpdatedAt(initialUpdatedAt);
 
     Patient updates = new Patient();
     updates.setPersonalDetails(null); // PersonalDetails is null in the update request
-    updates.setMedicalInfo("Updated Medical");
 
     when(patientRepository.findById(1L)).thenReturn(Optional.of(existingPatient));
     when(patientRepository.save(any(Patient.class)))
@@ -284,7 +269,7 @@ class PatientServiceTest {
 
     assertEquals(
         "OriginalFirst",
-        updated.getPersonalDetails().getFirstName(),
+        updated.getPersonalDetails().getName(),
         "PersonalDetails should not change");
     assertEquals("Updated Medical", updated.getMedicalInfo());
     assertTrue(updated.getUpdatedAt().isAfter(initialUpdatedAt));

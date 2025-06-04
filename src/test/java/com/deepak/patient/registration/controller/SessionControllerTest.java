@@ -58,8 +58,7 @@ class SessionControllerTest {
     patient.setId(1L);
     patient.setPhoneNumber("1234567890");
     PersonalDetails pd = new PersonalDetails();
-    pd.setFirstName("Test");
-    pd.setLastName("User");
+    pd.setName("Test");
     patient.setPersonalDetails(pd);
     patient.setUsingDefaultPassword(false); // Important for some logic paths
 

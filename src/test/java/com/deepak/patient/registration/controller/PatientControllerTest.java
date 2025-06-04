@@ -45,19 +45,16 @@ class PatientControllerTest {
     patient.setId(1L);
     patient.setPhoneNumber("+911234567890");
     PersonalDetails pd = new PersonalDetails();
-    pd.setFirstName("Test");
-    pd.setLastName("User");
+    pd.setName("Test");
     pd.setEmail("test@example.com");
     patient.setPersonalDetails(pd);
-    patient.setCreatedAt(LocalDateTime.now());
     patient.setUpdatedAt(LocalDateTime.now());
     patient.setUsingDefaultPassword(false);
 
     patientInput = new Patient();
     patientInput.setPhoneNumber("+911234567890");
     PersonalDetails pdInput = new PersonalDetails();
-    pdInput.setFirstName("Test");
-    pdInput.setLastName("User");
+    pdInput.setName("Test");
     pdInput.setEmail("test@example.com");
     patientInput.setPersonalDetails(pdInput);
   }
@@ -168,7 +165,7 @@ class PatientControllerTest {
   void updatePatient_shouldUpdateAndReturnPatient_WhenAuthorized() throws Exception {
     Patient updatedPatientDetails = new Patient();
     PersonalDetails pdUpdated = new PersonalDetails();
-    pdUpdated.setFirstName("UpdatedFirstName");
+    pdUpdated.setName("UpdatedFirstName");
     updatedPatientDetails.setPersonalDetails(pdUpdated);
 
     Patient resultPatient = new Patient(); // What the service returns

@@ -91,7 +91,7 @@ class SessionServiceTest {
     String userId = "user1";
     String data = "sessionData";
     // Using the storeSessionData version that relies on default sessionDataTimeoutMs
-    sessionService.storeSessionData(userId, data);
+    sessionService.storeSessionData(userId, data, 2000);
     assertEquals(data, sessionService.getSessionData(userId));
   }
 
@@ -115,7 +115,7 @@ class SessionServiceTest {
     String userId = "userExpiredSession";
     String data = "expiredData";
     sessionService.storeSessionData(
-        userId, data); // Uses default shortExpiryTimeMs for session data
+        userId, data, shortExpiryTimeMs); // Uses default shortExpiryTimeMs for session data
 
     assertTrue(
         sessionService.getSessionData(userId) != null, "Session data should exist initially");
@@ -136,7 +136,7 @@ class SessionServiceTest {
     String userToStay = "userSessionToStay";
 
     sessionService.storeSessionData(
-        userToExpire, "dataToExpire"); // Will expire soon due to short default
+        userToExpire, "dataToExpire", shortExpiryTimeMs); // Will expire soon due to short default
 
     Thread.sleep(shortExpiryTimeMs + 30); // Ensure userToExpire data is expired
 
@@ -145,7 +145,7 @@ class SessionServiceTest {
     // For clarity, let's re-assert the long timeout for the new session or use the specific timeout
     // variant
     ReflectionTestUtils.setField(sessionService, defaultSessionDataKey, longExpiryTimeMs);
-    sessionService.storeSessionData(userToStay, "dataToStay");
+    sessionService.storeSessionData(userToStay, "dataToStay", longExpiryTimeMs);
 
     Map<String, ?> sessionMap = getInternalSessionMap(sessionService);
     assertFalse(
