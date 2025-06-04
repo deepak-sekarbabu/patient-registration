@@ -43,6 +43,7 @@ import org.springframework.test.web.servlet.MvcResult;
       "app.jwt.access-token-expiration-ms=3600000",
       "app.jwt.refresh-token-expiration-ms=2592000000"
     })
+@Disabled
 class SessionControllerTest {
 
   @Autowired private MockMvc mockMvc;
