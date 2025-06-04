@@ -1,6 +1,7 @@
 package com.deepak.patient.registration.service;
 
 import com.deepak.patient.registration.model.patient.Patient;
+import com.deepak.patient.registration.model.patient.PersonalDetails;
 import com.deepak.patient.registration.repository.PatientRepository;
 import java.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -36,10 +37,13 @@ public class PatientService {
     // Set default password as phone number if provided, then hash it.
     // This is a temporary measure for initial account setup.
     // The user is expected to change this default password.
-    if (patient.getPhoneNumber() != null) {
+    if (patient.getPhoneNumber() != null && !patient.getPhoneNumber().trim().isEmpty()) {
       BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
       patient.setPasswordHash(encoder.encode(patient.getPhoneNumber()));
       patient.setUsingDefaultPassword(true); // Mark that the patient is using the default password
+    } else {
+      patient.setPasswordHash(null);
+      patient.setUsingDefaultPassword(false);
     }
     return patientRepository.save(patient);
   }
@@ -72,29 +76,56 @@ public class PatientService {
         .findById(id)
         .map(
             existingPatient -> {
-              // Update personal details if provided
+              // Update only the fields that are not null in updatedPatient
               if (updatedPatient.getPersonalDetails() != null) {
-                existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
+                // If existing personal details is null, set the new one directly
+                if (existingPatient.getPersonalDetails() == null) {
+                  existingPatient.setPersonalDetails(updatedPatient.getPersonalDetails());
+                } else {
+                  // Otherwise, update only non-null fields from the updated details
+                  PersonalDetails existingDetails = existingPatient.getPersonalDetails();
+                  PersonalDetails newDetails = updatedPatient.getPersonalDetails();
+
+                  if (newDetails.getName() != null) {
+                    existingDetails.setName(newDetails.getName());
+                  }
+                  if (newDetails.getEmail() != null) {
+                    existingDetails.setEmail(newDetails.getEmail());
+                  }
+                  if (newDetails.getPhoneNumber() != null) {
+                    existingDetails.setPhoneNumber(newDetails.getPhoneNumber());
+                  }
+                  if (newDetails.getBirthdate() != null) {
+                    existingDetails.setBirthdate(newDetails.getBirthdate());
+                  }
+                  if (newDetails.getSex() != null) {
+                    existingDetails.setSex(newDetails.getSex());
+                  }
+                  if (newDetails.getAddress() != null) {
+                    existingDetails.setAddress(newDetails.getAddress());
+                  }
+                  if (newDetails.getOccupation() != null) {
+                    existingDetails.setOccupation(newDetails.getOccupation());
+                  }
+                }
               }
-              // Update medical information if provided
+
+              // Update other fields if they are not null in the updated patient
               if (updatedPatient.getMedicalInfo() != null) {
                 existingPatient.setMedicalInfo(updatedPatient.getMedicalInfo());
               }
-              // Update emergency contact if provided
-              if (updatedPatient.getEmergencyContact() != null) {
-                existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
-              }
-              // Update insurance details if provided
               if (updatedPatient.getInsuranceDetails() != null) {
                 existingPatient.setInsuranceDetails(updatedPatient.getInsuranceDetails());
               }
-              // Update clinic preferences if provided
+              if (updatedPatient.getEmergencyContact() != null) {
+                existingPatient.setEmergencyContact(updatedPatient.getEmergencyContact());
+              }
               if (updatedPatient.getClinicPreferences() != null) {
                 existingPatient.setClinicPreferences(updatedPatient.getClinicPreferences());
               }
-              // Note: Other fields like phone number and password are not updated here.
-              // Specific methods should be used for those operations (e.g., updatePassword).
-              existingPatient.setUpdatedAt(LocalDateTime.now()); // Update the timestamp
+
+              // Update the timestamp
+              existingPatient.setUpdatedAt(LocalDateTime.now());
               return patientRepository.save(existingPatient);
             })
         .orElse(null); // Return null if patient with the given ID is not found
@@ -106,7 +137,7 @@ public class PatientService {
       patientRepository.deleteById(id);
     } else {
       logger.warn("Patient not found for deletion with id: {}", id);
-      throw new RuntimeException("Patient not found"); // Or a more specific exception
+      throw new RuntimeException("Patient not found with id: " + id);
     }
   }
 
@@ -149,16 +180,16 @@ public class PatientService {
    * @throws IllegalArgumentException if the new password is null or empty.
    */
   public void updatePassword(Long patientId, String newPassword) {
-    // Retrieve the patient by ID, or throw an exception if not found
+    // Validate the new password is not null or empty first
+    if (newPassword == null || newPassword.trim().isEmpty()) {
+      throw new IllegalArgumentException("New password cannot be null or empty");
+    }
+
+    // Then retrieve the patient by ID, or throw an exception if not found
     Patient patient =
         patientRepository
             .findById(patientId)
             .orElseThrow(() -> new RuntimeException("Patient not found with id: " + patientId));
-
-    // Validate that the new password is not null or empty
-    if (newPassword == null || newPassword.isEmpty()) {
-      throw new IllegalArgumentException("New password cannot be null or empty");
-    }
 
     // Hash the new password using BCrypt
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

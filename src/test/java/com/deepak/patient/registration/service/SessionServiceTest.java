@@ -14,7 +14,8 @@ class SessionServiceTest {
   private final long shortExpiryTimeMs = 50; // For quick expiration testing
   private final long longExpiryTimeMs = 100000; // For non-expiration testing
   private final String defaultRefreshTokenKey = "refreshTokenExpirationMs";
-  private final String defaultSessionDataKey = "sessionDataTimeoutMs";
+  private final String defaultSessionDataKey =
+      "refreshTokenExpirationMs"; // Using the same field as refresh token for session data
 
   @BeforeEach
   void setUp() {
