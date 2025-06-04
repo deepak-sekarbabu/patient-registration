@@ -44,6 +44,10 @@ class SessionControllerTest {
 
   @MockBean private TokenProvider tokenProvider;
 
+  @MockBean
+  private com.deepak.appointment.registration.service.ClinicInformationService
+      clinicInformationService; // To prevent loading ClinicInformationController and its deps
+
   @Autowired private ObjectMapper objectMapper;
 
   private Patient patient;
