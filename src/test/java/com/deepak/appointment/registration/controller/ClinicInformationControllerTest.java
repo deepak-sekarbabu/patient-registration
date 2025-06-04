@@ -1,6 +1,8 @@
 package com.deepak.appointment.registration.controller;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -128,13 +130,11 @@ class ClinicInformationControllerTest {
     mockMvc
         .perform(get("/v1/api/get-clinic/1"))
         .andExpect(status().isInternalServerError()) // Expecting 500 for unhandled RuntimeException
-        .andExpect(
-            result -> assertTrue(result.getResolvedException() instanceof RuntimeException))
+        .andExpect(result -> assertTrue(result.getResolvedException() instanceof RuntimeException))
         .andExpect(
             result ->
                 assertEquals(
-                    "Clinic not found with id: 1",
-                    result.getResolvedException().getMessage()));
+                    "Clinic not found with id: 1", result.getResolvedException().getMessage()));
   }
 
   @Test
