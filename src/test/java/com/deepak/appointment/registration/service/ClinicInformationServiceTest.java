@@ -32,8 +32,6 @@ class ClinicInformationServiceTest {
     clinic.setClinicName("Test Clinic");
     // Add other necessary properties if your ClinicInformation class has them
     // For example:
-    // clinic.setAddress("123 Test St");
-    // clinic.setPhoneNumber("555-1234");
   }
 
   @Test
@@ -47,7 +45,7 @@ class ClinicInformationServiceTest {
     // Assert
     assertNotNull(clinics);
     assertEquals(1, clinics.size());
-    assertEquals("Test Clinic", clinics.get(0).getClinicName());
+    assertEquals("Test Clinic", clinics.getFirst().getClinicName());
     verify(clinicInformationRepository, times(1)).findAll();
   }
 
@@ -86,11 +84,7 @@ class ClinicInformationServiceTest {
 
     // Act & Assert
     RuntimeException exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              clinicInformationService.getClinicById(1);
-            });
+        assertThrows(RuntimeException.class, () -> clinicInformationService.getClinicById(1));
     assertEquals("Clinic not found with id: 1", exception.getMessage());
     verify(clinicInformationRepository, times(1)).findById(1);
   }
@@ -108,7 +102,7 @@ class ClinicInformationServiceTest {
     // Assert
     assertNotNull(basicInfo);
     assertEquals(1, basicInfo.size());
-    assertEquals("Test Clinic", basicInfo.get(0).getClinicName());
+    assertEquals("Test Clinic", basicInfo.getFirst().getClinicName());
     verify(clinicInformationRepository, times(1)).findAllBasicInfo();
   }
 

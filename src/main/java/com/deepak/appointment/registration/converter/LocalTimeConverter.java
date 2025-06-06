@@ -17,20 +17,21 @@ public class LocalTimeConverter implements AttributeConverter<LocalTime, Object>
 
   @Override
   public LocalTime convertToEntityAttribute(Object dbData) {
-    if (dbData == null) {
-      return null;
-    }
-    if (dbData instanceof Time) {
-      return ((Time) dbData).toLocalTime();
-    } else if (dbData instanceof String) {
-      String timeStr = (String) dbData;
-      try {
-        return LocalTime.parse(timeStr, TIME_FORMATTER);
-      } catch (Exception ex) {
-        throw new IllegalArgumentException("Cannot convert to LocalTime: " + dbData, ex);
+    switch (dbData) {
+      case null -> {
+        return null;
       }
-    } else {
-      throw new IllegalArgumentException(
+      case Time time -> {
+        return time.toLocalTime();
+      }
+      case String timeStr -> {
+        try {
+          return LocalTime.parse(timeStr, TIME_FORMATTER);
+        } catch (Exception ex) {
+          throw new IllegalArgumentException("Cannot convert to LocalTime: " + dbData, ex);
+        }
+      }
+      default -> throw new IllegalArgumentException(
           "Unsupported type for LocalTime conversion: " + dbData.getClass());
     }
   }

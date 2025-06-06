@@ -38,7 +38,7 @@ class SlotInformationServiceTest {
     // Assert
     assertNotNull(dates);
     assertEquals(1, dates.size());
-    assertEquals(date, dates.get(0));
+    assertEquals(date, dates.getFirst());
     verify(slotInformationRepository, times(1))
         .findAvailableDatesByClinicAndDoctor(clinicId, doctorId);
   }
@@ -86,8 +86,8 @@ class SlotInformationServiceTest {
     assertFalse(slotsMap.isEmpty());
     assertTrue(slotsMap.containsKey("Morning"));
     assertEquals(1, slotsMap.get("Morning").size());
-    assertEquals("10:00", slotsMap.get("Morning").get(0).get("time"));
-    assertEquals("1", slotsMap.get("Morning").get(0).get("slotId"));
+    assertEquals("10:00", slotsMap.get("Morning").getFirst().get("time"));
+    assertEquals("1", slotsMap.get("Morning").getFirst().get("slotId"));
     // Depending on your SlotInformationService logic, you might also want to assert the "available"
     // status
     // assertEquals("true", slotsMap.get("Morning").get(0).get("available"));

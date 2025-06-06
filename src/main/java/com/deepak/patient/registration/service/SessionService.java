@@ -86,7 +86,7 @@ public class SessionService {
     // This helps to keep the session map from growing indefinitely.
     sessionMap
         .entrySet()
-        .removeIf(entry -> entry.getValue().getExpiryTime() < System.currentTimeMillis());
+        .removeIf(entry -> entry.getValue().expiryTime() < System.currentTimeMillis());
   }
 
   /**
@@ -98,7 +98,7 @@ public class SessionService {
   public String getSessionData(String userId) {
     SessionData sessionDataWrapper = sessionMap.get(userId);
     if (sessionDataWrapper == null
-        || sessionDataWrapper.getExpiryTime() < System.currentTimeMillis()) {
+        || sessionDataWrapper.expiryTime() < System.currentTimeMillis()) {
       // Session data not found or has expired
       if (sessionDataWrapper != null) {
         // Explicitly remove expired session data if encountered during retrieval
@@ -106,7 +106,7 @@ public class SessionService {
       }
       return null;
     }
-    return sessionDataWrapper.getSessionData();
+    return sessionDataWrapper.sessionData();
   }
 
   /**
@@ -118,28 +118,18 @@ public class SessionService {
     sessionMap.remove(userId);
   }
 
-  /** Inner class to hold session data along with its expiration timestamp. */
-  private static class SessionData {
-    private final String sessionData;
-    private final long expiryTime; // Absolute timestamp (ms since epoch) when this data expires
-
+  /**
+   * Inner class to hold session data along with its expiration timestamp.
+   *
+   * @param expiryTime Absolute timestamp (ms since epoch) when this data expires
+   */
+  private record SessionData(String sessionData, long expiryTime) {
     /**
      * Constructs a SessionData wrapper.
      *
      * @param sessionData The actual session data string.
      * @param expiryTime The absolute time (milliseconds since epoch) at which this data expires.
      */
-    public SessionData(String sessionData, long expiryTime) {
-      this.sessionData = sessionData;
-      this.expiryTime = expiryTime;
-    }
-
-    public String getSessionData() {
-      return sessionData;
-    }
-
-    public long getExpiryTime() {
-      return expiryTime;
-    }
+    private SessionData {}
   }
 }

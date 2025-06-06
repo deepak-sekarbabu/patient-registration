@@ -1,9 +1,7 @@
 package com.deepak.appointment.registration.controller;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,10 +36,8 @@ class ClinicInformationControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper
-      objectMapper; // For converting objects to JSON strings if needed for request bodies (not for
-
+  @Autowired private ObjectMapper objectMapper;
+  // For converting objects to JSON strings if needed for request bodies (not for
   // GET)
 
   @MockBean private ClinicInformationService clinicInformationService;
@@ -139,8 +135,9 @@ class ClinicInformationControllerTest {
               assertNotNull(resolvedException, "Expected an exception to be resolved");
               // Check the cause of the ServletException
               Throwable cause = resolvedException.getCause();
-              assertTrue(
-                  cause instanceof RuntimeException,
+              assertInstanceOf(
+                  RuntimeException.class,
+                  cause,
                   "Expected cause to be RuntimeException, but got: "
                       + (cause != null ? cause.getClass().getName() : "null"));
               assertEquals(

@@ -75,8 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected boolean shouldNotFilter(@SuppressWarnings("null") HttpServletRequest request)
-      throws ServletException {
+  protected boolean shouldNotFilter(@SuppressWarnings("null") HttpServletRequest request) {
     String path = request.getRequestURI();
     // This method determines whether the JWT authentication filter should be
     // skipped

@@ -1,15 +1,12 @@
 package com.deepak.patient.registration.model.patient;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class UpdatePasswordRequest {
   private String newPassword;
-
-  public String getNewPassword() {
-    return newPassword;
-  }
-
-  public void setNewPassword(String newPassword) {
-    this.newPassword = newPassword;
-  }
 
   @Override
   public String toString() {

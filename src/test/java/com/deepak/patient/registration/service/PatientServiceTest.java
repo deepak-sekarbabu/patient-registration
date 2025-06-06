@@ -1,8 +1,6 @@
 package com.deepak.patient.registration.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import com.deepak.patient.registration.model.patient.Patient;
@@ -305,11 +303,7 @@ class PatientServiceTest {
     when(patientRepository.existsById(2L)).thenReturn(false);
 
     RuntimeException exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              patientService.deletePatient(2L);
-            });
+        assertThrows(RuntimeException.class, () -> patientService.deletePatient(2L));
     assertEquals("Patient not found with id: 2", exception.getMessage()); // Corrected message
     verify(patientRepository, times(1)).existsById(2L);
     verify(patientRepository, never()).deleteById(anyLong());
@@ -379,10 +373,7 @@ class PatientServiceTest {
     when(patientRepository.findById(2L)).thenReturn(Optional.empty());
     RuntimeException exception =
         assertThrows(
-            RuntimeException.class,
-            () -> {
-              patientService.updatePassword(2L, "newPassword123");
-            });
+            RuntimeException.class, () -> patientService.updatePassword(2L, "newPassword123"));
     assertEquals("Patient not found with id: 2", exception.getMessage());
     verify(patientRepository, times(1)).findById(2L);
     verify(patientRepository, never()).save(any(Patient.class));
@@ -393,11 +384,7 @@ class PatientServiceTest {
     // No need to mock findById if it's not called before the check
     // when(patientRepository.findById(1L)).thenReturn(Optional.of(patientWithDetails));
     IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              patientService.updatePassword(1L, null);
-            });
+        assertThrows(IllegalArgumentException.class, () -> patientService.updatePassword(1L, null));
     assertEquals("New password cannot be null or empty", exception.getMessage());
     // verify(patientRepository, times(1)).findById(1L)); // This check might be too early depending
     // on service impl
@@ -410,11 +397,7 @@ class PatientServiceTest {
   void updatePassword_shouldThrowIllegalArgumentException_whenNewPasswordEmpty() {
     // when(patientRepository.findById(1L)).thenReturn(Optional.of(patientWithDetails));
     IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              patientService.updatePassword(1L, "");
-            });
+        assertThrows(IllegalArgumentException.class, () -> patientService.updatePassword(1L, ""));
     assertEquals("New password cannot be null or empty", exception.getMessage());
     verify(patientRepository, never()).findById(anyLong());
     verify(patientRepository, never()).save(any(Patient.class));

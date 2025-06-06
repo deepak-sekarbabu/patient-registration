@@ -79,14 +79,10 @@ public class Patient {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  // Add missing method for setting default password
   @Builder.Default
   @Column(name = "using_default_password", nullable = false)
   private boolean usingDefaultPassword = true;
-
-  // Add missing method for setting default password
-  public void setUsingDefaultPassword(boolean usingDefaultPassword) {
-    this.usingDefaultPassword = usingDefaultPassword;
-  }
 
   public static class PatientBuilder {
     private Long id;
@@ -98,12 +94,12 @@ public class Patient {
     private ClinicPreferences clinicPreferences;
     private String passwordHash;
     private LocalDateTime updatedAt;
-    private final boolean usingDefaultPassword = true;
 
     public Patient build() {
       if (this.updatedAt == null) {
         this.updatedAt = java.time.LocalDateTime.now();
       }
+      boolean usingDefaultPassword = true;
       return new Patient(
           id,
           phoneNumber,

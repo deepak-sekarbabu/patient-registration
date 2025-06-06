@@ -118,8 +118,7 @@ class SessionServiceTest {
     sessionService.storeSessionData(
         userId, data, shortExpiryTimeMs); // Uses default shortExpiryTimeMs for session data
 
-    assertTrue(
-        sessionService.getSessionData(userId) != null, "Session data should exist initially");
+    assertNotNull(sessionService.getSessionData(userId), "Session data should exist initially");
 
     Thread.sleep(shortExpiryTimeMs + 30);
 

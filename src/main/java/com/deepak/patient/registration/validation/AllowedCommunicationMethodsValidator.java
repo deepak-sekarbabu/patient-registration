@@ -24,6 +24,6 @@ public class AllowedCommunicationMethodsValidator
     }
 
     // The selected method must be one of the allowed values
-    return ALLOWED.contains(value.get(0));
+    return ALLOWED.contains(value.getFirst());
   }
 }
