@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Clinic Information", description = "APIs for managing clinic information")
 public class ClinicInformationController {
 
+  private static final Logger logger = LoggerFactory.getLogger(ClinicInformationController.class);
   private final ClinicInformationService clinicInformationService;
   private final DoctorInformationService doctorInformationService;
   private final SlotInformationService slotInformationService;
@@ -56,6 +59,7 @@ public class ClinicInformationController {
                     schema = @Schema(implementation = ClinicInformation.class)))
       })
   public ResponseEntity<List<ClinicInformation>> getAllClinics() {
+    logger.info("GET /v1/api/get-clinic called");
     return ResponseEntity.ok(clinicInformationService.getAllClinics());
   }
 
@@ -75,6 +79,7 @@ public class ClinicInformationController {
         @ApiResponse(responseCode = "404", description = "Clinic not found")
       })
   public ResponseEntity<ClinicInformation> getClinicById(@PathVariable Integer id) {
+    logger.info("GET /v1/api/get-clinic/{} called", id);
     return ResponseEntity.ok(clinicInformationService.getClinicById(id));
   }
 
@@ -92,6 +97,7 @@ public class ClinicInformationController {
                     schema = @Schema(implementation = ClinicInfoDropDown.class)))
       })
   public ResponseEntity<List<ClinicInfoDropDown>> getBasicClinicInfo() {
+    logger.info("GET /v1/api/get-clinic-basic called");
     return ResponseEntity.ok(clinicInformationService.getBasicClinicInfo());
   }
 
@@ -111,6 +117,7 @@ public class ClinicInformationController {
       })
   public ResponseEntity<List<DoctorInfoDropDown>> getDoctorsForClinic(
       @PathVariable Integer clinicId) {
+    logger.info("GET /v1/api/get-clinic/{}/doctors called", clinicId);
     List<DoctorInfoDropDown> doctors = doctorInformationService.getDoctorsForClinic(clinicId);
     return ResponseEntity.ok(doctors);
   }
@@ -128,6 +135,7 @@ public class ClinicInformationController {
       })
   public ResponseEntity<List<LocalDate>> getAvailableDates(
       @PathVariable Integer clinicId, @PathVariable String doctorId) {
+    logger.info("GET /v1/api/clinics/{}/doctors/{}/available-dates called", clinicId, doctorId);
     List<LocalDate> availableDates = slotInformationService.getAvailableDates(clinicId, doctorId);
     return ResponseEntity.ok(availableDates);
   }
@@ -147,6 +155,8 @@ public class ClinicInformationController {
       @PathVariable String doctorId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
+    logger.info(
+        "GET /v1/api/clinics/{}/doctors/{}/slots called with date {}", clinicId, doctorId, date);
     Map<String, List<Map<String, String>>> slots =
         slotInformationService.getAvailableSlots(clinicId, doctorId, date);
 

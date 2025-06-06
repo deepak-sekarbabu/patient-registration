@@ -1,8 +1,6 @@
 package com.deepak.appointment.registration.entity;
 
-import com.deepak.appointment.registration.converter.LocalTimeConverter;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,9 +8,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "slot_information")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SlotInformation {
 
   @Id
@@ -26,8 +32,7 @@ public class SlotInformation {
   @Column(name = "shift_time")
   private String shiftTime;
 
-  @Column(name = "slot_time")
-  @Convert(converter = LocalTimeConverter.class)
+  @Column(name = "slot_time", columnDefinition = "TIME")
   private LocalTime slotTime;
 
   @Column(name = "clinic_id")
@@ -41,69 +46,4 @@ public class SlotInformation {
 
   @Column(name = "is_available")
   private Boolean isAvailable;
-
-  // Getters and Setters
-  public Long getSlotId() {
-    return slotId;
-  }
-
-  public void setSlotId(Long slotId) {
-    this.slotId = slotId;
-  }
-
-  public Integer getSlotNo() {
-    return slotNo;
-  }
-
-  public void setSlotNo(Integer slotNo) {
-    this.slotNo = slotNo;
-  }
-
-  public String getShiftTime() {
-    return shiftTime;
-  }
-
-  public void setShiftTime(String shiftTime) {
-    this.shiftTime = shiftTime;
-  }
-
-  public LocalTime getSlotTime() {
-    return slotTime;
-  }
-
-  public void setSlotTime(LocalTime slotTime) {
-    this.slotTime = slotTime;
-  }
-
-  public Integer getClinicId() {
-    return clinicId;
-  }
-
-  public void setClinicId(Integer clinicId) {
-    this.clinicId = clinicId;
-  }
-
-  public String getDoctorId() {
-    return doctorId;
-  }
-
-  public void setDoctorId(String doctorId) {
-    this.doctorId = doctorId;
-  }
-
-  public LocalDate getSlotDate() {
-    return slotDate;
-  }
-
-  public void setSlotDate(LocalDate slotDate) {
-    this.slotDate = slotDate;
-  }
-
-  public Boolean getIsAvailable() {
-    return isAvailable;
-  }
-
-  public void setIsAvailable(Boolean available) {
-    isAvailable = available;
-  }
 }

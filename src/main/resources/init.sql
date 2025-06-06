@@ -7,7 +7,7 @@ USE QueueManagement;
 -- Patient Registration Table
 CREATE TABLE
     IF NOT EXISTS patients (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
         phone_number CHAR(10) NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
         personal_details JSON,
@@ -24,8 +24,8 @@ CREATE TABLE
 -- Appointments Table
 CREATE TABLE
     IF NOT EXISTS appointments (
-        appointment_id INTEGER AUTO_INCREMENT PRIMARY KEY,
-        patient_id INTEGER NOT NULL,
+        appointment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        patient_id BIGINT NOT NULL,
         appointment_type VARCHAR(50) NOT NULL,
         appointment_for VARCHAR(10) NOT NULL,
         appointment_for_name VARCHAR(255) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE
         symptom VARCHAR(255),
         other_symptoms VARCHAR(255),
         appointment_date DATETIME NOT NULL,
-        slot_id INTEGER,
+        slot_id BIGINT,
         doctor_id VARCHAR(50) NOT NULL,
         clinic_id INTEGER NOT NULL,
         active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -48,8 +48,8 @@ CREATE TABLE
 CREATE TABLE
     IF NOT EXISTS queue_management (
         queue_management_id INTEGER AUTO_INCREMENT PRIMARY KEY,
-        appointment_id INTEGER,
-        slot_id INTEGER,
+        appointment_id BIGINT,
+        slot_id BIGINT,
         clinic_id INTEGER,
         doctor_id VARCHAR(50),
         initial_queue_no INTEGER,
