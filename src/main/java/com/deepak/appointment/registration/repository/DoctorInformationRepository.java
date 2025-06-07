@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DoctorInformationRepository extends JpaRepository<DoctorInformation, Integer> {
+public interface DoctorInformationRepository extends JpaRepository<DoctorInformation, String> {
 
   @Query(
       "SELECT new com.deepak.appointment.registration.dto.DoctorInfoDropDown(d.doctorId, d.doctorName) FROM DoctorInformation d WHERE d.clinicId = ?1")
