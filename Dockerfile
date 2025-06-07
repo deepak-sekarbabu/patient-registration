@@ -2,19 +2,20 @@
 FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /app
 
-# Copy Maven wrapper and configuration first for better caching
-COPY mvnw .
-COPY .mvn .mvn
+# Install Maven
+# Alpine Linux uses 'apk' for package management
+# You might need to adjust the Maven version if a specific one is required.
+# As of current, a recent version should be available.
+RUN apk add --no-cache maven
+
+# Copy Maven files (pom.xml)
 COPY pom.xml .
 
-# Download dependencies (this layer changes only if pom.xml changes)
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
-
-# Copy source code (this layer changes frequently during development)
+# Copy source code
 COPY src src
 
 # Build the application
-RUN ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 # Run stage
 FROM eclipse-temurin:21-jre-alpine
@@ -24,12 +25,14 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Create a non-root user and switch to it
-# Combine addgroup and adduser for a single layer
 RUN addgroup -S spring && adduser -S spring -G spring
+
+RUN mkdir -p logs && chown spring:spring logs
+
 USER spring:spring
 
 # Expose the application port
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
