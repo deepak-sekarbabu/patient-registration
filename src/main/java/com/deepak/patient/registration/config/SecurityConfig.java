@@ -2,7 +2,6 @@ package com.deepak.patient.registration.config;
 
 import com.deepak.patient.registration.security.JwtAuthenticationFilter;
 import java.util.Arrays;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -99,10 +98,8 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // Add
-    // your
-    // frontend
-    // URL
+    configuration.setAllowedOrigins(
+        Arrays.asList("http://localhost:3000", "https://patient-registration-7djk.onrender.com"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
     configuration.setAllowCredentials(true);
