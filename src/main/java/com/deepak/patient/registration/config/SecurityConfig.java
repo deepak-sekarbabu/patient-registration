@@ -65,6 +65,8 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**")
                     .permitAll()
+                    .requestMatchers("/actuator/**")
+                    .permitAll()
                     .requestMatchers(HttpMethod.GET, "/v1/api/patients/by-id")
                     .authenticated()
                     .requestMatchers(HttpMethod.PUT, "/v1/api/patients/{id}")
