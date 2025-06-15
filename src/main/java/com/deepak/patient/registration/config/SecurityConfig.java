@@ -1,6 +1,7 @@
 package com.deepak.patient.registration.config;
 
 import com.deepak.patient.registration.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -32,32 +33,41 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
+        .exceptionHandling(
+            exception ->
+                exception
+                    .authenticationEntryPoint(
+                        (request, response, authException) -> {
+                          response.sendError(
+                              HttpServletResponse.SC_UNAUTHORIZED,
+                              "Unauthorized: Authentication token was either missing or invalid.");
+                        })
+                    .accessDeniedHandler(
+                        (request, response, accessDeniedException) -> {
+                          response.sendError(
+                              HttpServletResponse.SC_FORBIDDEN,
+                              "Access denied: You don't have permission to access this resource.");
+                        }))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/v1/api/patients")
+                    // Public endpoints
+                    .requestMatchers(
+                        "/v1/api/auth/**",
+                        "/v1/api/patients/register",
+                        "/v1/api/patients/exists-by-phone",
+                        "/v1/api/patients/forgot-password")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/v1/api/patients/*/password")
+                    // Allow preflight requests for all endpoints
+                    .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/v1/api/patients/**")
+                    // Allow appointment creation without authentication for testing
+                    .requestMatchers(HttpMethod.POST, "/api/v1/appointments")
                     .permitAll()
-                    .requestMatchers("/v1/api/auth/login")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/register")
-                    .permitAll()
-                    .requestMatchers("/v1/api/patients/exists-by-phone")
-                    .permitAll()
-                    .requestMatchers("/v1/api/auth/validate")
-                    .permitAll()
-                    .requestMatchers("/v1/api/auth/refresh")
-                    .permitAll()
-                    .requestMatchers("/v1/api/auth/logout")
-                    .permitAll()
+                    // Swagger UI
                     .requestMatchers(
                         "/swagger-ui/**",
                         "/swagger-ui.html",
@@ -66,17 +76,16 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**")
                     .permitAll()
-                    .requestMatchers("/actuator/**")
+                    // Actuator
+                    .requestMatchers("/actuator/health")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/v1/api/patients/by-id")
-                    .authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/v1/api/patients/{id}")
-                    .authenticated()
-                    .requestMatchers(HttpMethod.DELETE, "/v1/api/patients/{id}")
-                    .authenticated()
-                    .requestMatchers(HttpMethod.POST, "/v1/api/patients/{id}/password")
-                    .authenticated()
-                    .requestMatchers(HttpMethod.GET, "/v1/api/clinics/*/doctors/*/available-dates")
+                    // Patient management
+                    .requestMatchers(HttpMethod.POST, "/v1/api/patients")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/v1/api/patients/*/password")
+                    .permitAll()
+                    // Protected endpoints
+                    .requestMatchers("/v1/api/**")
                     .authenticated()
                     .anyRequest()
                     .authenticated());
@@ -104,10 +113,22 @@ public class SecurityConfig {
     configuration.setAllowedOrigins(
         Arrays.asList(
             "http://localhost:3000",
+            "http://localhost:8080",
             "https://patient-registration-7djk.onrender.com",
             "https://patient-registration-ui.onrender.com"));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
+    configuration.setAllowedMethods(
+        Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowedHeaders(
+        Arrays.asList(
+            "Authorization",
+            "Content-Type",
+            "X-XSRF-TOKEN",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"));
+    configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
     configuration.setAllowCredentials(true);
     configuration.setMaxAge(3600L);
 
