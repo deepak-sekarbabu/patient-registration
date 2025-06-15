@@ -8,6 +8,8 @@ import com.deepak.appointment.registration.exception.ConflictException;
 import com.deepak.appointment.registration.exception.NotFoundException;
 import com.deepak.appointment.registration.repository.AppointmentRepository;
 import com.deepak.patient.registration.service.PatientService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -66,5 +68,30 @@ public class AppointmentService {
 
     // Convert saved entity back to response DTO
     return appointmentConverter.toResponse(savedAppointment);
+  }
+
+  /**
+   * Retrieves all active appointments for a specific patient.
+   *
+   * @param patientId the ID of the patient
+   * @return list of appointment responses for the patient
+   * @throws NotFoundException if the patient is not found
+   */
+  @Transactional(readOnly = true)
+  public List<AppointmentResponse> getAppointmentsByPatientId(Long patientId) {
+    log.info("Fetching appointments for patient ID: {}", patientId);
+
+    // Validate patient exists
+    if (patientService.getPatientById(patientId) == null) {
+      log.warn("Patient not found with ID: {}", patientId);
+      throw new NotFoundException("Patient not found with ID: " + patientId);
+    }
+
+    // Find all active appointments for the patient
+    List<Appointment> appointments = appointmentRepository.findByPatientIdAndActiveTrue(patientId);
+    log.debug("Found {} active appointments for patient ID: {}", appointments.size(), patientId);
+
+    // Convert entities to DTOs
+    return appointments.stream().map(appointmentConverter::toResponse).collect(Collectors.toList());
   }
 }

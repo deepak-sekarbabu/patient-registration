@@ -4,15 +4,19 @@ import com.deepak.appointment.registration.dto.AppointmentRequest;
 import com.deepak.appointment.registration.dto.AppointmentResponse;
 import com.deepak.appointment.registration.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,5 +63,32 @@ public class AppointmentController {
 
     AppointmentResponse response = appointmentService.createAppointment(appointmentRequest);
     return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
+
+  /**
+   * Retrieves all active appointments for a specific patient.
+   *
+   * @param patientId the ID of the patient
+   * @return list of active appointments for the patient
+   */
+  @Operation(
+      summary = "Get appointments by patient ID",
+      description = "Retrieves all active appointments for a specific patient",
+      responses = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved appointments",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AppointmentResponse.class, type = "array"))),
+        @ApiResponse(responseCode = "404", description = "Patient not found", content = @Content)
+      })
+  @GetMapping("/patient/{patientId}")
+  public ResponseEntity<List<AppointmentResponse>> getAppointmentsByPatientId(
+      @Parameter(description = "ID of the patient", required = true) @PathVariable Long patientId) {
+    List<AppointmentResponse> appointments =
+        appointmentService.getAppointmentsByPatientId(patientId);
+    return ResponseEntity.ok(appointments);
   }
 }
