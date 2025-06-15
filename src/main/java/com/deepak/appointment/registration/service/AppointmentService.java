@@ -7,7 +7,11 @@ import com.deepak.appointment.registration.entity.Appointment;
 import com.deepak.appointment.registration.exception.ConflictException;
 import com.deepak.appointment.registration.exception.NotFoundException;
 import com.deepak.appointment.registration.repository.AppointmentRepository;
+import com.deepak.appointment.registration.repository.ClinicInformationRepository;
+import com.deepak.appointment.registration.repository.DoctorInformationRepository;
+import com.deepak.appointment.registration.repository.SlotInformationRepository;
 import com.deepak.patient.registration.service.PatientService;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,9 @@ public class AppointmentService {
   private final AppointmentRepository appointmentRepository;
   private final AppointmentConverter appointmentConverter;
   private final PatientService patientService;
+  private final DoctorInformationRepository doctorInformationRepository;
+  private final ClinicInformationRepository clinicInformationRepository;
+  private final SlotInformationRepository slotInformationRepository;
 
   /**
    * Creates a new appointment.
@@ -91,7 +98,37 @@ public class AppointmentService {
     List<Appointment> appointments = appointmentRepository.findByPatientIdAndActiveTrue(patientId);
     log.debug("Found {} active appointments for patient ID: {}", appointments.size(), patientId);
 
-    // Convert entities to DTOs
-    return appointments.stream().map(appointmentConverter::toResponse).collect(Collectors.toList());
+    // Convert entities to DTOs with additional information
+    return appointments.stream()
+        .map(
+            appointment -> {
+              AppointmentResponse response = appointmentConverter.toResponse(appointment);
+
+              // Fetch and set doctor name
+              doctorInformationRepository
+                  .findById(appointment.getDoctorId())
+                  .ifPresent(doctor -> response.setDoctorName(doctor.getDoctorName()));
+
+              // Fetch and set clinic name
+              clinicInformationRepository
+                  .findById(appointment.getClinicId())
+                  .ifPresent(clinic -> response.setClinicName(clinic.getClinicName()));
+
+              // Fetch and set slot time if slotId exists
+              if (appointment.getSlotId() != null) {
+                slotInformationRepository
+                    .findById(appointment.getSlotId())
+                    .ifPresent(
+                        slot -> {
+                          // Format the time as HH:mm
+                          String formattedTime =
+                              slot.getSlotTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+                          response.setSlotTime(formattedTime);
+                        });
+              }
+
+              return response;
+            })
+        .collect(Collectors.toList());
   }
 }

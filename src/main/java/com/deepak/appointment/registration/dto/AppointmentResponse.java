@@ -15,7 +15,10 @@ public class AppointmentResponse {
   private String otherSymptoms;
   private LocalDateTime appointmentDate;
   private Long slotId;
+  private String slotTime;
   private String doctorId;
+  private String doctorName;
   private Integer clinicId;
+  private String clinicName;
   private boolean active;
 }
