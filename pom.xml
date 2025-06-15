@@ -33,8 +33,7 @@
         <spring-dotenv.version>4.0.0</spring-dotenv.version>
         
         <!-- Database -->
-        <hibernate.version>5.6.9.Final</hibernate.version>
-        <mysql-connector-j.version>9.2.0</mysql-connector-j.version>
+        <mysql-connector-j.version>8.0.33</mysql-connector-j.version>
         
         <!-- Plugins -->
         <spotless-maven-plugin.version>2.44.4</spotless-maven-plugin.version>
@@ -42,7 +41,7 @@
         <native-maven-plugin.version>0.9.20</native-maven-plugin.version>
         <spring-boot-maven-plugin.version>3.0.0</spring-boot-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <hibernate-enhance-maven-plugin.version>${hibernate.version}</hibernate-enhance-maven-plugin.version>
+
     </properties>
     <!-- ===== Dependencies ===== -->
     <dependencies>
@@ -204,11 +203,10 @@
                 </configuration>
             </plugin>
 
-            <!-- Hibernate Enhancement -->
+            <!-- Hibernate Enhancement - Version managed by Spring Boot -->
             <plugin>
                 <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>${hibernate-enhance-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enhance</id>
