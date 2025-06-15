@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 /** Controller for managing patient appointments. */
 @Tag(name = "Appointment", description = "APIs for managing patient appointments")
 @RestController
-@RequestMapping(value = "/api/v1/appointments", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "v1/api/appointments", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AppointmentController {
 
   private final AppointmentService appointmentService;
