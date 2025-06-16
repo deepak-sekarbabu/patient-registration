@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AppointmentService {
 
+  private static final int MAX_APPOINTMENTS_PER_DAY = 2;
   private final AppointmentRepository appointmentRepository;
   private final AppointmentConverter appointmentConverter;
   private final PatientService patientService;
@@ -60,6 +61,26 @@ public class AppointmentService {
     if (appointmentRepository.existsBySlotIdAndActiveTrue(slotId)) {
       log.warn("Slot already booked - slot ID: {}", slotId);
       throw new ConflictException("The selected slot is already booked");
+    }
+
+    // Get the slot information to check the date
+    var slotInfo =
+        slotInformationRepository
+            .findById(slotId)
+            .orElseThrow(() -> new NotFoundException("Slot not found with ID: " + slotId));
+
+    // Check if patient already has 2 or more active appointments on this date
+    int activeAppointmentsCount =
+        appointmentRepository.countActiveAppointmentsByPatientAndDate(
+            patientId, slotInfo.getSlotDate());
+
+    if (activeAppointmentsCount >= MAX_APPOINTMENTS_PER_DAY) {
+      log.warn(
+          "Patient ID: {} already has {} active appointments on {}",
+          patientId,
+          activeAppointmentsCount,
+          slotInfo.getSlotDate());
+      throw new ConflictException("Cancel the previous appointments to create a new one");
     }
 
     // Convert DTO to entity and save

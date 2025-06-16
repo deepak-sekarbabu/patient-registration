@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-@ControllerAdvice("appointmentExceptionHandler")
-@org.springframework.stereotype.Component("appointmentExceptionHandler")
+@ControllerAdvice(
+    basePackages = {
+      "com.deepak.appointment.registration.controller",
+      "com.deepak.patient.registration.controller"
+    })
+@org.springframework.stereotype.Component("globalExceptionHandler")
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ConflictException.class)
