@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.3</version>
         <relativePath/>
         <!-- lookup parent from repository -->
     </parent>
@@ -20,6 +20,7 @@
 
     <!-- ===== Properties ===== -->
     <properties>
+        <!-- Project -->
         <skipTests>true</skipTests>
 
         <!-- Java -->
@@ -35,9 +36,12 @@
         <jjwt.version>0.9.1</jjwt.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <spring-dotenv.version>4.0.0</spring-dotenv.version>
+        <jackson-databind.version>2.17.3</jackson-databind.version>
+        <h2.version>2.2.224</h2.version>
 
         <!-- Database -->
         <mysql-connector-j.version>8.0.33</mysql-connector-j.version>
+        <hibernate.version>6.6.18.Final</hibernate.version>
 
         <!-- Plugins -->
         <spotless-maven-plugin.version>2.44.4</spotless-maven-plugin.version>
@@ -45,7 +49,8 @@
         <native-maven-plugin.version>0.9.20</native-maven-plugin.version>
         <spring-boot-maven-plugin.version>${project.parent.version}</spring-boot-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-
+        <hibernate-enhance-maven-plugin.version>6.6.18.Final</hibernate-enhance-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
     </properties>
     <!-- ===== Dependencies ===== -->
     <dependencies>
@@ -213,6 +218,7 @@
             <plugin>
                 <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
+                <version>${hibernate-enhance-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enhance</id>
@@ -261,7 +267,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.13</version>
+                <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>

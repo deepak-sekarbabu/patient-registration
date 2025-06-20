@@ -93,7 +93,7 @@ public class AppointmentService {
         "Successfully created appointment with ID: {} for patient ID: {}",
         savedAppointment.getAppointmentId(),
         patientId);
-        
+
     // Mark the slot as not available
     slotInfo.setIsAvailable(false);
     slotInformationRepository.save(slotInfo);
