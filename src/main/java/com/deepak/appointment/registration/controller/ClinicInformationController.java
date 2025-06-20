@@ -1,5 +1,6 @@
 package com.deepak.appointment.registration.controller;
 
+import com.deepak.appointment.registration.config.CacheConfig;
 import com.deepak.appointment.registration.dto.ClinicInfoDropDown;
 import com.deepak.appointment.registration.dto.DoctorInfoDropDown;
 import com.deepak.appointment.registration.model.ClinicInformation;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,7 +88,8 @@ public class ClinicInformationController {
   @GetMapping("/get-clinic-basic")
   @Operation(
       summary = "Get basic clinic information",
-      description = "Retrieves only clinic IDs and names",
+      description =
+          "Retrieves basic clinic information including ID and name, intended for dropdowns. Results are cached for 30 minutes.",
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -96,8 +99,9 @@ public class ClinicInformationController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = ClinicInfoDropDown.class)))
       })
+  @Cacheable(value = CacheConfig.CLINIC_INFO_CACHE, key = "'allClinics'")
   public ResponseEntity<List<ClinicInfoDropDown>> getBasicClinicInfo() {
-    logger.info("GET /v1/api/get-clinic-basic called");
+    logger.info("GET /v1/api/get-clinic-basic called - fetching fresh data");
     return ResponseEntity.ok(clinicInformationService.getBasicClinicInfo());
   }
 
@@ -105,7 +109,7 @@ public class ClinicInformationController {
   @Operation(
       summary = "Get doctors for clinic",
       description =
-          "Retrieves doctor IDs and names for a specific clinic ID, intended for dropdowns",
+          "Retrieves doctor IDs and names for a specific clinic ID, intended for dropdowns. Results are cached for 30 minutes.",
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -115,9 +119,10 @@ public class ClinicInformationController {
                     mediaType = "application/json",
                     schema = @Schema(implementation = DoctorInfoDropDown.class)))
       })
+  @Cacheable(value = CacheConfig.CLINIC_DOCTORS_CACHE, key = "#clinicId")
   public ResponseEntity<List<DoctorInfoDropDown>> getDoctorsForClinic(
       @PathVariable Integer clinicId) {
-    logger.info("GET /v1/api/get-clinic/{}/doctors called", clinicId);
+    logger.info("GET /v1/api/get-clinic/{}/doctors called - fetching fresh data", clinicId);
     List<DoctorInfoDropDown> doctors = doctorInformationService.getDoctorsForClinic(clinicId);
     return ResponseEntity.ok(doctors);
   }
