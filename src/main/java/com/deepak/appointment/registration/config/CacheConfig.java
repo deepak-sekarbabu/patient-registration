@@ -2,7 +2,6 @@ package com.deepak.appointment.registration.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.concurrent.TimeUnit;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.support.CompositeCacheManager;
@@ -42,7 +41,7 @@ public class CacheConfig {
   }
 
   @Bean
-  public CacheManager cacheManager(
+  public CompositeCacheManager cacheManager(
       Caffeine<Object, Object> defaultCaffeineConfig,
       Caffeine<Object, Object> clinicInfoCaffeineConfig,
       Caffeine<Object, Object> clinicDoctorsCaffeineConfig) {
