@@ -1,17 +1,21 @@
 package com.deepak.appointment.registration.dto;
 
+import com.deepak.appointment.registration.model.AppointmentFor;
+import com.deepak.appointment.registration.model.AppointmentType;
+import com.deepak.appointment.registration.model.Symptom;
 import java.time.LocalDateTime;
 import lombok.Data;
 
+/** DTO for appointment response data. */
 @Data
 public class AppointmentResponse {
   private Long appointmentId;
   private Long patientId;
-  private String appointmentType;
-  private String appointmentFor;
+  private AppointmentType appointmentType;
+  private AppointmentFor appointmentFor;
   private String appointmentForName;
   private Integer appointmentForAge;
-  private String symptom;
+  private Symptom symptom;
   private String otherSymptoms;
   private LocalDateTime appointmentDate;
   private Long slotId;

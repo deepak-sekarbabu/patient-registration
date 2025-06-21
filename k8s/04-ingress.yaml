@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: patient-registration
+  namespace: patient-registration
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Uncomment and configure the following if you want to use TLS
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # cert-manager.io/issuer: "letsencrypt-prod"
+spec:
+  # Uncomment and configure the following if you have TLS certificates
+  # tls:
+  # - hosts:
+  #     - patient-registration.yourdomain.com
+  #   secretName: patient-registration-tls
+  rules:
+  - host: patient-registration.yourdomain.com
+    http:
+      paths:
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: patient-registration
+            port:
+              number: 80
