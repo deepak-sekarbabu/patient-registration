@@ -21,7 +21,9 @@ public class GzipRequestFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      @SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain)
+      @SuppressWarnings("null") HttpServletRequest request,
+      @SuppressWarnings("null") HttpServletResponse response,
+      @SuppressWarnings("null") FilterChain filterChain)
       throws ServletException, IOException {
 
     String contentEncoding = request.getHeader(HttpHeaders.CONTENT_ENCODING);
