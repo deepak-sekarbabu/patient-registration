@@ -1,16 +1,15 @@
 package com.deepak.patient.registration.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -26,6 +25,11 @@ public class TokenProvider {
 
   @Value("${app.jwt.secret}")
   private String jwtSecret;
+
+  private SecretKey getSigningKey() {
+    byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+    return Keys.hmacShaKeyFor(keyBytes);
+  }
 
   @Value("${app.jwt.access-token-expiration-ms}")
   private long accessTokenExpirationMs;
@@ -53,15 +57,14 @@ public class TokenProvider {
    */
   public String createAccessToken(String userId, String phoneNumber) {
     return Jwts.builder()
-        .setSubject(userId) // Standard claim: Subject (user ID)
+        .subject(userId) // Standard claim: Subject (user ID)
         .claim("phoneNumber", phoneNumber) // Custom claim: phoneNumber
-        .setIssuedAt(new Date()) // Standard claim: Issued At
-        .setExpiration(
+        .issuedAt(new Date()) // Standard claim: Issued At
+        .expiration(
             new Date(
                 System.currentTimeMillis()
                     + accessTokenExpirationMs)) // Standard claim: Expiration Date
-        .signWith(
-            SignatureAlgorithm.HS512, jwtSecret) // Sign with HS512 algorithm and the secret key
+        .signWith(getSigningKey()) // Sign with the signing key
         .compact();
   }
 
@@ -77,16 +80,14 @@ public class TokenProvider {
     String tokenId = UUID.randomUUID().toString(); // Generate a unique ID for the refresh token
 
     return Jwts.builder()
-        .setSubject(userId) // Standard claim: Subject (user ID)
-        .setId(
-            tokenId) // Standard claim: JWT ID (jti), useful for tracking or revoking refresh tokens
-        .setIssuedAt(new Date()) // Standard claim: Issued At
-        .setExpiration(
+        .subject(userId) // Standard claim: Subject (user ID)
+        .id(tokenId) // Standard claim: JWT ID (jti)
+        .issuedAt(new Date()) // Standard claim: Issued At
+        .expiration(
             new Date(
                 System.currentTimeMillis()
                     + refreshTokenExpirationMs)) // Standard claim: Expiration Date
-        .signWith(
-            SignatureAlgorithm.HS512, jwtSecret) // Sign with HS512 algorithm and the secret key
+        .signWith(getSigningKey()) // Sign with the signing key
         .compact();
   }
 
@@ -99,7 +100,7 @@ public class TokenProvider {
    */
   public boolean validateAccessToken(String token) {
     try {
-      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+      Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
       return true;
     } catch (SignatureException e) {
       // logger.error("Invalid JWT signature: {}", e.getMessage());
@@ -111,6 +112,8 @@ public class TokenProvider {
       // logger.error("JWT token is unsupported: {}", e.getMessage());
     } catch (IllegalArgumentException e) {
       // logger.error("JWT claims string is empty: {}", e.getMessage());
+    } catch (JwtException e) {
+      // logger.error("JWT validation failed: {}", e.getMessage());
     }
     return false;
   }
@@ -124,13 +127,9 @@ public class TokenProvider {
    */
   public boolean validateRefreshToken(String token) {
     try {
-      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+      Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
       return true;
-    } catch (SignatureException
-        | MalformedJwtException
-        | ExpiredJwtException
-        | UnsupportedJwtException
-        | IllegalArgumentException e) {
+    } catch (JwtException | IllegalArgumentException e) {
       // Optionally log these exceptions if needed for debugging, but typically returning false is
       // sufficient for validation logic.
       // logger.warn("Refresh token validation failed: " + e.getMessage());
@@ -140,15 +139,21 @@ public class TokenProvider {
 
   /** Extracts user ID from a token */
   public String getUserIdFromToken(String token) {
-    return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser()
+        .verifyWith(getSigningKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload()
+        .getSubject();
   }
 
   /** Extracts user ID specifically from a refresh token */
   public String getUserIdFromRefreshToken(String refreshToken) {
     return Jwts.parser()
-        .setSigningKey(jwtSecret)
-        .parseClaimsJws(refreshToken)
-        .getBody()
+        .verifyWith(getSigningKey())
+        .build()
+        .parseSignedClaims(refreshToken)
+        .getPayload()
         .getSubject();
   }
 

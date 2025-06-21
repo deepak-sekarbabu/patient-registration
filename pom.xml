@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- ===== Project Information ===== -->
@@ -8,49 +9,42 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.3</version>
-        <relativePath/>
-        <!-- lookup parent from repository -->
+        <relativePath />
     </parent>
 
     <groupId>com.deepak</groupId>
     <artifactId>registration</artifactId>
     <version>1.0.0</version>
     <name>registration</name>
-    <description>Patient registration</description>
+    <description>Patient Registration System</description>
 
     <!-- ===== Properties ===== -->
     <properties>
-        <!-- Project -->
-        <skipTests>true</skipTests>
-
-        <!-- Java -->
+        <!-- Build Properties -->
         <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <!-- Dependencies -->
+        <skipTests>true</skipTests>
+       
+        <!-- Dependency Versions -->
         <lombok.version>1.18.32</lombok.version>
         <springdoc.version>2.8.8</springdoc.version>
-        <jjwt.version>0.9.1</jjwt.version>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <jjwt-api.version>0.12.5</jjwt-api.version>
+        <jjwt-impl.version>0.12.5</jjwt-impl.version>
+        <jjwt-jackson.version>0.12.5</jjwt-jackson.version>
         <spring-dotenv.version>4.0.0</spring-dotenv.version>
-        <jackson-databind.version>2.17.3</jackson-databind.version>
         <h2.version>2.2.224</h2.version>
-
-        <!-- Database -->
         <mysql-connector-j.version>8.0.33</mysql-connector-j.version>
-        <hibernate.version>6.6.18.Final</hibernate.version>
+        <caffeine.version>3.1.8</caffeine.version>
 
-        <!-- Plugins -->
-        <spotless-maven-plugin.version>2.44.4</spotless-maven-plugin.version>
-        <google-java-format.version>1.17.0</google-java-format.version>
-        <native-maven-plugin.version>0.9.20</native-maven-plugin.version>
-        <spring-boot-maven-plugin.version>${project.parent.version}</spring-boot-maven-plugin.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <!-- Plugin Versions -->
         <hibernate-enhance-maven-plugin.version>6.6.18.Final</hibernate-enhance-maven-plugin.version>
+        <spring-boot-maven-plugin.version>${spring-boot.version}</spring-boot-maven-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
     </properties>
     <!-- ===== Dependencies ===== -->
     <dependencies>
@@ -87,10 +81,6 @@
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
@@ -98,17 +88,20 @@
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>${jjwt.version}</version>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${jaxb-api.version}</version>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt-impl.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt-jackson.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Database -->
@@ -134,6 +127,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
         </dependency>
 
         <!-- Development Tools -->
@@ -149,7 +143,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Utils -->
+        <!-- Utilities -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -159,6 +153,7 @@
             <groupId>me.paulschwarz</groupId>
             <artifactId>spring-dotenv</artifactId>
             <version>${spring-dotenv.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Testing -->
@@ -166,10 +161,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -182,8 +179,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -203,7 +199,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
+                <version>${project.parent.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -238,11 +234,11 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless-maven-plugin.version}</version>
+                <version>2.44.4</version>
                 <configuration>
                     <java>
                         <googleJavaFormat>
-                            <version>${google-java-format.version}</version>
+                            <version>1.17.0</version>
                         </googleJavaFormat>
                         <importOrder />
                         <removeUnusedImports />
@@ -256,7 +252,9 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>           
+            </plugin>
+
+            <!-- JaCoCo Test Coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -278,5 +276,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

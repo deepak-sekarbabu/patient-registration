@@ -5,6 +5,20 @@ metadata:
   namespace: patient-registration
 data:
   SPRING_PROFILES_ACTIVE: "prod"
+  
+  # Cache Configuration
+  APP_CACHE_SPECS_DEFAULT_TTL: "8h"
+  APP_CACHE_SPECS_DEFAULT_INITIAL-CAPACITY: "100"
+  APP_CACHE_SPECS_DEFAULT_MAX-SIZE: "500"
+  
+  APP_CACHE_SPECS_CLINICINFO_TTL: "30m"
+  APP_CACHE_SPECS_CLINICINFO_INITIAL-CAPACITY: "10"
+  APP_CACHE_SPECS_CLINICINFO_MAX-SIZE: "50"
+  
+  APP_CACHE_SPECS_CLINICDOCTORS_TTL: "30m"
+  APP_CACHE_SPECS_CLINICDOCTORS_INITIAL-CAPACITY: "20"
+  APP_CACHE_SPECS_CLINICDOCTORS_MAX-SIZE: "100"
+  
   # Add any other environment-specific configuration here
   # Example:
   # DATABASE_URL: "jdbc:postgresql://db-host:5432/patientdb"
