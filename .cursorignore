@@ -1,8 +1,44 @@
-# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+# Ignore build and dependency directories
+target/
+build/
+.gradle/
+node_modules/
+
+# Ignore IDE specific files and directories
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
 *.log
-*.target**
-*.vscode**
-*.idea**
-*.gitignore
-*.git
+logs/
+
+# Ignore environment and credential files
+*.env
+*.pem
+*.key
+*.cert
+
+# Ignore local configuration files
+application-local*.yml
+application-local*.properties
+
+# Ignore test reports and coverage reports
+**/target/surefire-reports/
+**/target/failsafe-reports/
+**/target/site/jacoco/
+
+# Ignore Git related files
+.git/
+.gitignore
+.gitmodules
+
+# Ignore specific application files
 src/main/resources/logback-spring.xml
