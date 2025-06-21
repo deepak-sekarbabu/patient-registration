@@ -6,11 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(
-    basePackages = {
-      "com.deepak.appointment.registration",
-      "com.deepak.patient.registration",
-      "com.logging.registration",
-    })
+    basePackages = {"com.deepak.appointment.registration", "com.deepak.patient.registration"})
 public class RegistrationApplication {
 
   public static void main(String[] args) {
