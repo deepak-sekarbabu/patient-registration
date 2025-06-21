@@ -1,5 +1,8 @@
 package com.deepak.appointment.registration.entity;
 
+import com.deepak.appointment.registration.model.AppointmentFor;
+import com.deepak.appointment.registration.model.AppointmentType;
+import com.deepak.appointment.registration.model.Symptom;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -16,11 +19,13 @@ public class Appointment {
   @Column(name = "patient_id", nullable = false)
   private Long patientId;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "appointment_type", nullable = false, length = 50)
-  private String appointmentType;
+  private AppointmentType appointmentType;
 
-  @Column(name = "appointment_for", nullable = false, length = 10)
-  private String appointmentFor;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "appointment_for", nullable = false, length = 20)
+  private AppointmentFor appointmentFor;
 
   @Column(name = "appointment_for_name", nullable = false, length = 255)
   private String appointmentForName;
@@ -28,8 +33,9 @@ public class Appointment {
   @Column(name = "appointment_for_age")
   private Integer appointmentForAge;
 
-  @Column(name = "symptom", length = 255)
-  private String symptom;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "symptom", length = 50)
+  private Symptom symptom;
 
   @Column(name = "other_symptoms", length = 255)
   private String otherSymptoms;

@@ -256,14 +256,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Native Image Support -->
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>${native-maven-plugin.version}</version>
-            </plugin>
+            </plugin>           
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
