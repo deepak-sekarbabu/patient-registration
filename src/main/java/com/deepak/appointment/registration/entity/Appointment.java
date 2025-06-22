@@ -27,7 +27,7 @@ public class Appointment {
   @Column(name = "appointment_for", nullable = false, length = 20)
   private AppointmentFor appointmentFor;
 
-  @Column(name = "appointment_for_name", nullable = false, length = 255)
+  @Column(name = "appointment_for_name", nullable = false)
   private String appointmentForName;
 
   @Column(name = "appointment_for_age")
@@ -37,7 +37,7 @@ public class Appointment {
   @Column(name = "symptom", length = 50)
   private Symptom symptom;
 
-  @Column(name = "other_symptoms", length = 255)
+  @Column(name = "other_symptoms")
   private String otherSymptoms;
 
   @Column(name = "appointment_date", nullable = false)

@@ -173,7 +173,7 @@ public class TokenProvider {
         .httpOnly(false) // Protects against XSS attacks
         .secure(cookieSecure) // Send cookie only over HTTPS if true
         .sameSite(
-            "Lax") // CSRF protection: cookie sent on top-level navigations and GET requests from
+            "Lax") // CSRF protection: cookie sent on top-level navigation's and GET requests from
         // other sites
         .maxAge(accessTokenExpirationMs / 1000) // Max age in seconds
         .build();

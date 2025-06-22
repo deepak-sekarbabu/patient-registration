@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
     } catch (Exception e) {
       // Log any exception that occurs during authentication processing
-      // It's important not to let exceptions propagate from the filter,
+      // Its important not to let exceptions propagate from the filter,
       // as this could expose security details or break the filter chain.
       logger.error("Could not set user authentication in security context", e);
     }

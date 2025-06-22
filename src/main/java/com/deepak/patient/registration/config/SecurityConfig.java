@@ -37,17 +37,15 @@ public class SecurityConfig {
             exception ->
                 exception
                     .authenticationEntryPoint(
-                        (request, response, authException) -> {
-                          response.sendError(
-                              HttpServletResponse.SC_UNAUTHORIZED,
-                              "Unauthorized: Authentication token was either missing or invalid.");
-                        })
+                        (request, response, authException) ->
+                            response.sendError(
+                                HttpServletResponse.SC_UNAUTHORIZED,
+                                "Unauthorized: Authentication token was either missing or invalid."))
                     .accessDeniedHandler(
-                        (request, response, accessDeniedException) -> {
-                          response.sendError(
-                              HttpServletResponse.SC_FORBIDDEN,
-                              "Access denied: You don't have permission to access this resource.");
-                        }))
+                        (request, response, accessDeniedException) ->
+                            response.sendError(
+                                HttpServletResponse.SC_FORBIDDEN,
+                                "Access denied: You don't have permission to access this resource.")))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
