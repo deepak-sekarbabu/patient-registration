@@ -6,11 +6,15 @@ import com.deepak.appointment.registration.dto.AppointmentResponse;
 import com.deepak.appointment.registration.entity.Appointment;
 import com.deepak.appointment.registration.exception.ConflictException;
 import com.deepak.appointment.registration.exception.NotFoundException;
+import com.deepak.appointment.registration.model.QueueManagement;
 import com.deepak.appointment.registration.repository.AppointmentRepository;
 import com.deepak.appointment.registration.repository.ClinicInformationRepository;
 import com.deepak.appointment.registration.repository.DoctorInformationRepository;
+import com.deepak.appointment.registration.repository.QueueManagementRepository;
 import com.deepak.appointment.registration.repository.SlotInformationRepository;
 import com.deepak.patient.registration.service.PatientService;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +37,7 @@ public class AppointmentService {
   private final DoctorInformationRepository doctorInformationRepository;
   private final ClinicInformationRepository clinicInformationRepository;
   private final SlotInformationRepository slotInformationRepository;
+  private final QueueManagementRepository queueManagementRepository;
 
   /**
    * Creates a new appointment.
@@ -93,6 +98,30 @@ public class AppointmentService {
         "Successfully created appointment with ID: {} for patient ID: {}",
         savedAppointment.getAppointmentId(),
         patientId);
+
+    // Add the entry to the queue_management table
+    QueueManagement queueManagement = new QueueManagement();
+    queueManagement.setAppointmentId(savedAppointment.getAppointmentId());
+    queueManagement.setSlotId(slotId.intValue());
+    queueManagement.setClinicId(savedAppointment.getClinicId());
+    queueManagement.setDoctorId(savedAppointment.getDoctorId());
+    queueManagement.setInitialQueueNo(slotInfo.getSlotNo());
+    queueManagement.setCurrentQueueNo(slotInfo.getSlotNo());
+    queueManagement.setAdvancePaid(false);
+    queueManagement.setCancelled(false);
+    queueManagement.setAdvanceRevertIfPaid(false);
+    queueManagement.setPatientReached(false);
+    queueManagement.setVisitStatus("PENDING");
+    queueManagement.setConsultationFeePaid(false);
+    queueManagement.setConsultationFeeAmount(0.0);
+    queueManagement.setTransactionIdAdvanceFee(null);
+    queueManagement.setTransactionIdConsultationFee(null);
+    queueManagement.setTransactionIdAdvanceRevert(null);
+    queueManagement.setDate(Date.valueOf(LocalDate.now()));
+    log.debug(
+        "Saving queue management entry for appointment ID: {}",
+        savedAppointment.getAppointmentId());
+    queueManagementRepository.save(queueManagement);
 
     // Mark the slot as not available
     slotInfo.setIsAvailable(false);
