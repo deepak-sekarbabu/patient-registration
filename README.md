@@ -85,6 +85,16 @@ java -jar target/registration-0.0.1-SNAPSHOT.jar
 `
     Ensure that your MySQL and Redis instances are running and accessible by the application. You might need to configure environment variables for database credentials, Redis connection, and JWT secret for a production environment instead of using the `application.properties` file directly.
 
+### Building with Docker
+
+To build the application using Docker, run the following command from the project root:
+
+```bash
+docker build -f DockerfileMultistage -t registration:1.0.0 .
+```
+
+This command uses the multi-stage Dockerfile to first build the application using Maven and then creates a lightweight final image with only the necessary runtime dependencies.
+
 ### Database, Redis & JWT Configuration
 
 Update `src/main/resources/application.properties` with your credentials:
