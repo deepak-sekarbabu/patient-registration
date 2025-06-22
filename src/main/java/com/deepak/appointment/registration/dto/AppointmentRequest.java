@@ -3,10 +3,8 @@ package com.deepak.appointment.registration.dto;
 import com.deepak.appointment.registration.model.AppointmentFor;
 import com.deepak.appointment.registration.model.AppointmentType;
 import com.deepak.appointment.registration.model.Symptom;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
+import jakarta.validation.groups.Default;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -30,7 +28,8 @@ public class AppointmentRequest {
 
   @Pattern(
       regexp = "^(0|[1-9]\\d?|1[01]\\d|110)$",
-      message = "Age must be a number between 0 and 110")
+      message = "Age must be a number between 0 and 110",
+      groups = {Default.class, NotNull.class})
   private String appointmentForAge;
 
   @NotNull(message = "Symptom is required")
