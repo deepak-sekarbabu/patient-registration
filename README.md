@@ -90,7 +90,7 @@ java -jar target/registration-0.0.1-SNAPSHOT.jar
 To build the application using Docker, run the following command from the project root:
 
 ```bash
-docker build -f DockerfileMultistage -t registration:1.0.0 .
+docker build -f Dockerfile -t registration:1.0.0 .
 ```
 
 This command uses the multi-stage Dockerfile to first build the application using Maven and then creates a lightweight final image with only the necessary runtime dependencies.
