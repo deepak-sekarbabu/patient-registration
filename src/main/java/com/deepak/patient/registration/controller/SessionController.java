@@ -3,9 +3,10 @@ package com.deepak.patient.registration.controller;
 import com.deepak.patient.registration.model.patient.LoginRequest;
 import com.deepak.patient.registration.model.patient.LoginResponse;
 import com.deepak.patient.registration.model.patient.Patient;
+import com.deepak.patient.registration.model.patient.auth.RefreshToken;
 import com.deepak.patient.registration.security.TokenProvider;
 import com.deepak.patient.registration.service.PatientService;
-import com.deepak.patient.registration.service.SessionService;
+import com.deepak.patient.registration.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +36,9 @@ public class SessionController {
 
   private static final Logger logger = LoggerFactory.getLogger(SessionController.class);
 
-  private final SessionService sessionService;
   private final PatientService patientService;
   private final TokenProvider tokenProvider;
+  private final RefreshTokenService refreshTokenService;
 
   @Operation(
       summary = "Validate JWT token",
@@ -138,53 +140,47 @@ public class SessionController {
             content = @Content)
       })
   @PostMapping("/refresh")
+  @Transactional
   public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
     logger.info("Refreshing token for request: {}", request.getRequestURI());
-    String refreshToken = tokenProvider.extractRefreshTokenFromCookies(request);
-    if (refreshToken == null) {
+    String requestRefreshToken = tokenProvider.extractRefreshTokenFromCookies(request);
+    if (requestRefreshToken == null) {
       logger.warn("No refresh token found in cookies");
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No refresh token found");
     }
-
     try {
-      String userId = tokenProvider.getUserIdFromRefreshToken(refreshToken);
-      logger.info("Refresh token belongs to userId: {}", userId);
-
-      // Check if the token is blacklisted (logged out)
-      if (sessionService.isRefreshTokenBlacklisted(refreshToken)) {
-        logger.warn("Refresh token is blacklisted for userId: {}", userId);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid session");
-      }
-
-      // Retrieve patient to get phone number
-      Long patientId = Long.valueOf(userId);
-      Patient patient = patientService.getPatientById(patientId);
-
-      if (patient == null || patient.getPersonalDetails() == null) {
-        logger.warn("Patient or personal details not found for userId: {}", userId);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User data not found");
-      }
-
-      String phoneNumber = patient.getPersonalDetails().getPhoneNumber();
-
-      // Create new tokens
-      String newAccessToken = tokenProvider.createAccessToken(userId, phoneNumber);
-      String newRefreshToken = tokenProvider.createRefreshToken(userId);
-      logger.info("Generated new access and refresh tokens for userId: {}", userId);
-
-      // Blacklist old refresh token
-      sessionService.blacklistRefreshToken(refreshToken);
-      logger.info("Blacklisted old refresh token for userId: {}", userId);
-
-      // Create and set cookies
-      ResponseCookie accessTokenCookie = tokenProvider.generateAccessTokenCookie(newAccessToken);
-      ResponseCookie refreshTokenCookie = tokenProvider.generateRefreshTokenCookie(newRefreshToken);
-
-      response.addHeader("Set-Cookie", accessTokenCookie.toString());
-      response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
-      logger.info("Set new access and refresh token cookies for userId: {}", userId);
-      return ResponseEntity.ok().body("Token refreshed successfully");
+      return refreshTokenService
+          .findByToken(requestRefreshToken)
+          .map(
+              refreshToken -> {
+                RefreshToken verifiedToken = refreshTokenService.verifyExpiration(refreshToken);
+                Long userId = verifiedToken.getUserId().longValue();
+                Patient patient = patientService.getPatientById(userId);
+                if (patient == null || patient.getPersonalDetails() == null) {
+                  logger.warn("Patient or personal details not found for userId: {}", userId);
+                  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User data not found");
+                }
+                String phoneNumber = patient.getPersonalDetails().getPhoneNumber();
+                // Generate new tokens
+                String newAccessToken =
+                    tokenProvider.createAccessToken(String.valueOf(userId), phoneNumber);
+                RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(userId);
+                // Revoke old refresh tokens
+                refreshTokenService.deleteByUserId(userId);
+                // Set cookies
+                ResponseCookie accessTokenCookie =
+                    tokenProvider.generateAccessTokenCookie(newAccessToken);
+                ResponseCookie refreshTokenCookie =
+                    tokenProvider.generateRefreshTokenCookie(newRefreshToken.getToken());
+                response.addHeader("Set-Cookie", accessTokenCookie.toString());
+                response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+                logger.info("Set new access and refresh token cookies for userId: {}", userId);
+                return ResponseEntity.ok().body("Token refreshed successfully");
+              })
+          .orElseGet(
+              () ->
+                  ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                      .body("Refresh token not found or expired"));
     } catch (Exception e) {
       logger.error("Failed to refresh token", e);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to refresh token");
@@ -201,25 +197,27 @@ public class SessionController {
             content = @Content(schema = @Schema(implementation = String.class)))
       })
   @PostMapping("/logout")
+  @Transactional
   public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
     logger.info("Logging out user for request: {}", request.getRequestURI());
     String refreshToken = tokenProvider.extractRefreshTokenFromCookies(request);
-
-    // Blacklist the refresh token if it exists
     if (refreshToken != null) {
-      sessionService.blacklistRefreshToken(refreshToken);
-      logger.info("Blacklisted refresh token during logout");
+      refreshTokenService
+          .findByToken(refreshToken)
+          .ifPresent(
+              token -> {
+                token.setRevoked(true);
+                refreshTokenService.deleteByUserId(token.getUserId().longValue());
+              });
+      logger.info("Revoked refresh token during logout");
     } else {
       logger.warn("No refresh token found during logout");
     }
-
     // Clear cookies
     ResponseCookie accessTokenCookie = tokenProvider.generateClearAccessTokenCookie();
     ResponseCookie refreshTokenCookie = tokenProvider.generateClearRefreshTokenCookie();
-
     response.addHeader("Set-Cookie", accessTokenCookie.toString());
     response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
     logger.info("Cleared access and refresh token cookies during logout");
     return ResponseEntity.ok().body("Logged out successfully");
   }
@@ -251,18 +249,15 @@ public class SessionController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     logger.info("Login successful for phone number: {}", loginRequest.getPhoneNumber());
-
     String userId = String.valueOf(patient.getId());
     String accessToken = tokenProvider.createAccessToken(userId, patient.getPhoneNumber());
-    String refreshToken = tokenProvider.createRefreshToken(userId);
-
+    RefreshToken refreshToken = refreshTokenService.createRefreshToken(patient.getId());
     // Set cookies
     ResponseCookie accessTokenCookie = tokenProvider.generateAccessTokenCookie(accessToken);
-    ResponseCookie refreshTokenCookie = tokenProvider.generateRefreshTokenCookie(refreshToken);
-
+    ResponseCookie refreshTokenCookie =
+        tokenProvider.generateRefreshTokenCookie(refreshToken.getToken());
     response.addHeader("Set-Cookie", accessTokenCookie.toString());
     response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
     LoginResponse loginResponse = new LoginResponse(patient, accessToken);
     return ResponseEntity.ok(loginResponse);
   }
