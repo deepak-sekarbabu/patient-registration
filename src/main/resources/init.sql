@@ -76,6 +76,6 @@ CREATE TABLE
     IF NOT EXISTS blacklisted_access_tokens (
         id BIGINT NOT NULL AUTO_INCREMENT,
         token VARCHAR(512) NOT NULL UNIQUE,
-        expiry_date DATETIME(6) NOT NULL,
+        expiry_date DATETIME(6) NULL,
         PRIMARY KEY (id)
 );
