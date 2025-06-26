@@ -71,3 +71,11 @@ CREATE TABLE
         FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
         FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id)
     );
+
+CREATE TABLE
+    IF NOT EXISTS blacklisted_access_tokens (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        token VARCHAR(512) NOT NULL UNIQUE,
+        expiry_date DATETIME(6) NOT NULL,
+        PRIMARY KEY (id)
+);

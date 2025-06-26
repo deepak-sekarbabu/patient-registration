@@ -1,5 +1,6 @@
 package com.deepak.patient.registration.security;
 
+import com.deepak.patient.registration.service.BlacklistedAccessTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final TokenProvider tokenProvider;
   private final UserDetailsService userDetailsService;
+  private final BlacklistedAccessTokenService blacklistedAccessTokenService;
 
   @Override
   protected void doFilterInternal(
@@ -40,6 +42,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       // Validate the token if it exists
       if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+        // Check if the token is blacklisted
+        if (blacklistedAccessTokenService.isTokenBlacklisted(accessToken)) {
+          // Optionally, you can log or set a response header here
+          filterChain.doFilter(request, response);
+          return;
+        }
         // Extract user ID from the token
         String userId = tokenProvider.getUserIdFromToken(accessToken);
 

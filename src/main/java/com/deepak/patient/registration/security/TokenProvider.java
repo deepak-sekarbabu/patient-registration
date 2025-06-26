@@ -1,6 +1,10 @@
 package com.deepak.patient.registration.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -26,7 +30,7 @@ public class TokenProvider {
   @Value("${app.jwt.secret}")
   private String jwtSecret;
 
-  private SecretKey getSigningKey() {
+  public SecretKey getSigningKey() {
     byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
     return Keys.hmacShaKeyFor(keyBytes);
   }
@@ -130,7 +134,8 @@ public class TokenProvider {
       Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
       return true;
     } catch (JwtException | IllegalArgumentException e) {
-      // Optionally log these exceptions if needed for debugging, but typically returning false is
+      // Optionally log these exceptions if needed for debugging, but typically
+      // returning false is
       // sufficient for validation logic.
       // logger.warn("Refresh token validation failed: " + e.getMessage());
       return false;

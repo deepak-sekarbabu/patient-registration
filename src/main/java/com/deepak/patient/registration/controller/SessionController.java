@@ -5,8 +5,10 @@ import com.deepak.patient.registration.model.patient.LoginResponse;
 import com.deepak.patient.registration.model.patient.Patient;
 import com.deepak.patient.registration.model.patient.auth.RefreshToken;
 import com.deepak.patient.registration.security.TokenProvider;
+import com.deepak.patient.registration.service.BlacklistedAccessTokenService;
 import com.deepak.patient.registration.service.PatientService;
 import com.deepak.patient.registration.service.RefreshTokenService;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Date;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -39,6 +42,7 @@ public class SessionController {
   private final PatientService patientService;
   private final TokenProvider tokenProvider;
   private final RefreshTokenService refreshTokenService;
+  private final BlacklistedAccessTokenService blacklistedAccessTokenService;
 
   @Operation(
       summary = "Validate JWT token",
@@ -99,21 +103,21 @@ public class SessionController {
         return ResponseEntity.badRequest()
             .body(Map.of("valid", false, "message", "No token provided"));
       }
-
+      if (blacklistedAccessTokenService.isTokenBlacklisted(token)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("valid", false, "message", "Token is blacklisted (logged out)"));
+      }
       if (!tokenProvider.validateAccessToken(token)) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(Map.of("valid", false, "message", "Invalid or expired token"));
       }
-
       String userId = tokenProvider.getUserIdFromToken(token);
       Long patientId = Long.valueOf(userId);
       Patient patient = patientService.getPatientById(patientId);
-
       if (patient == null) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(Map.of("valid", false, "message", "Patient not found"));
       }
-
       return ResponseEntity.ok(Map.of("valid", true, "patient", patient));
     } catch (NumberFormatException e) {
       logger.error("Invalid user ID format in token: {}", e.getMessage());
@@ -201,6 +205,18 @@ public class SessionController {
   public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
     logger.info("Logging out user for request: {}", request.getRequestURI());
     String refreshToken = tokenProvider.extractRefreshTokenFromCookies(request);
+    // Blacklist the access token
+    String accessToken = tokenProvider.extractAccessToken(request);
+    if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+      Date expiry =
+          Jwts.parser()
+              .verifyWith(tokenProvider.getSigningKey())
+              .build()
+              .parseSignedClaims(accessToken)
+              .getPayload()
+              .getExpiration();
+      blacklistedAccessTokenService.blacklistToken(accessToken, expiry.toInstant());
+    }
     if (refreshToken != null) {
       refreshTokenService
           .findByToken(refreshToken)
