@@ -4,6 +4,7 @@ import com.deepak.patient.registration.model.patient.Patient;
 import com.deepak.patient.registration.model.patient.PersonalDetails;
 import com.deepak.patient.registration.repository.PatientRepository;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -161,6 +162,8 @@ public class PatientService {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     if (encoder.matches(password, patient.getPasswordHash())) {
       // Password matches
+      patient.setLastLoginAt(OffsetDateTime.now());
+      patientRepository.save(patient);
       return patient;
     } else {
       // Password does not match

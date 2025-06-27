@@ -1,4 +1,4 @@
-package com.logging.registration.aspect;
+package com.deepak.logging.registration.aspect;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

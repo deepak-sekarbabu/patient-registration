@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
     basePackages = {
       "com.deepak.appointment.registration",
       "com.deepak.patient.registration",
-      "com.logging.registration",
+      "com.deepak.logging.registration",
     })
 public class RegistrationApplication {
 

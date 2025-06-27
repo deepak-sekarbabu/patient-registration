@@ -18,6 +18,10 @@ CREATE TABLE
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         using_default_password BOOLEAN NOT NULL DEFAULT TRUE,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        failed_login_attempts INT NOT NULL DEFAULT 0,
+        locked_until TIMESTAMP NULL,
+        last_login_at TIMESTAMP NULL,
         UNIQUE KEY uq_phone_number (phone_number)
     );
 

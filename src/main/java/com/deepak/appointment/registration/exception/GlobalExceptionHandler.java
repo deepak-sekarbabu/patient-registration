@@ -27,7 +27,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
       "com.deepak.appointment.registration.controller",
       "com.deepak.patient.registration.controller"
     })
-@org.springframework.stereotype.Component("globalExceptionHandler")
+@org.springframework.stereotype.Component("appointmentGlobalExceptionHandler")
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);

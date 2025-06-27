@@ -1,4 +1,4 @@
-package com.logging.registration.filter;
+package com.deepak.logging.registration.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
