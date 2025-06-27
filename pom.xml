@@ -13,9 +13,9 @@
     </parent>
 
     <groupId>com.deepak</groupId>
-    <artifactId>registration</artifactId>
+    <artifactId>patient-registration</artifactId>
     <version>1.0.0</version>
-    <name>registration</name>
+    <name>patient-registration</name>
     <description>Patient Registration System</description>
 
     <!-- ===== Properties ===== -->
