@@ -195,7 +195,7 @@ public class TokenProvider {
     return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
         .domain(cookieDomain)
         .path("/")
-        .httpOnly(false)
+        .httpOnly(true)
         .secure(cookieSecure)
         .sameSite("Lax") // Consider "Strict" if refresh token is only used on same-site requests
         .maxAge(refreshTokenExpirationMs / 1000) // Max age in seconds
@@ -228,7 +228,7 @@ public class TokenProvider {
     return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
         .domain(cookieDomain)
         .path("/")
-        .httpOnly(false)
+        .httpOnly(true)
         .secure(cookieSecure)
         .sameSite("Lax")
         .maxAge(0)

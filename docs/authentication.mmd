@@ -1,0 +1,45 @@
+sequenceDiagram
+    participant Client
+    participant SessionController
+    participant TokenProvider
+    participant RefreshTokenService
+    participant PatientService
+    participant DB
+
+    Client->>SessionController: POST /v1/api/auth/refresh (with refreshToken cookie)
+    SessionController->>TokenProvider: extractRefreshTokenFromCookies(request)
+    TokenProvider-->>SessionController: refreshToken
+    SessionController->>RefreshTokenService: findByToken(refreshToken)
+    RefreshTokenService->>DB: Query refresh token
+    DB-->>RefreshTokenService: RefreshToken object
+    RefreshTokenService-->>SessionController: Optional<RefreshToken>
+    alt Token found
+        SessionController->>RefreshTokenService: verifyExpiration(refreshToken)
+        RefreshTokenService->>DB: (if expired/revoked) delete token
+        RefreshTokenService-->>SessionController: verified RefreshToken or Exception
+        SessionController->>PatientService: getPatientById(userId)
+        PatientService->>DB: Query patient
+        DB-->>PatientService: Patient object
+        PatientService-->>SessionController: Patient
+        alt Patient found
+            SessionController->>TokenProvider: createAccessToken(userId, phoneNumber)
+            TokenProvider-->>SessionController: newAccessToken
+            SessionController->>RefreshTokenService: createRefreshToken(userId)
+            RefreshTokenService->>DB: Save new refresh token
+            DB-->>RefreshTokenService: new RefreshToken
+            RefreshTokenService-->>SessionController: new RefreshToken
+            SessionController->>RefreshTokenService: deleteByUserId(userId)
+            RefreshTokenService->>DB: Revoke all user tokens
+            DB-->>RefreshTokenService: (done)
+            SessionController->>TokenProvider: generateAccessTokenCookie(newAccessToken)
+            TokenProvider-->>SessionController: accessTokenCookie
+            SessionController->>TokenProvider: generateRefreshTokenCookie(newRefreshToken)
+            TokenProvider-->>SessionController: refreshTokenCookie (httpOnly=true)
+            SessionController->>Client: Set-Cookie: accessToken, refreshToken (httpOnly)
+            Client-->>SessionController: Receives new cookies
+        else Patient not found
+            SessionController->>Client: 401 Unauthorized (User data not found)
+        end
+    else Token not found/expired
+        SessionController->>Client: 401 Unauthorized (Refresh token not found or expired)
+    end

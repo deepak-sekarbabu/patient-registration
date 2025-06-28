@@ -3,14 +3,13 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Spring Boot-RegistrationApplication<registration>",
+      "name": "Spring Boot-RegistrationApplication<patient-registration>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "mainClass": "com.deepak.RegistrationApplication",
-      "projectName": "registration",
+      "projectName": "patient-registration",
       "args": "",
-      "envFile": "${workspaceFolder}/.env",
-      "console": "internalConsole"
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
